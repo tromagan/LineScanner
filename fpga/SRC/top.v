@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 //`default_nettype none
 
-//`define SIM
+`define SIM
 
 module top
 (
