@@ -58,6 +58,7 @@
 		.led_clk_on_blue_export          (<connected-to-led_clk_on_blue_export>),          //      led_clk_on_blue.export
 		.led_clk_on_green_export         (<connected-to-led_clk_on_green_export>),         //     led_clk_on_green.export
 		.led_clk_on_red_export           (<connected-to-led_clk_on_red_export>),           //       led_clk_on_red.export
+		.lines_delay_export              (<connected-to-lines_delay_export>),              //          lines_delay.export
 		.memory_mem_a                    (<connected-to-memory_mem_a>),                    //               memory.mem_a
 		.memory_mem_ba                   (<connected-to-memory_mem_ba>),                   //                     .mem_ba
 		.memory_mem_ck                   (<connected-to-memory_mem_ck>),                   //                     .mem_ck
@@ -86,7 +87,6 @@
 		.sdram0_byteenable               (<connected-to-sdram0_byteenable>),               //                     .byteenable
 		.sdram0_write                    (<connected-to-sdram0_write>),                    //                     .write
 		.status_reg_export               (<connected-to-status_reg_export>),               //           status_reg.export
-		.timer_cnt_export                (<connected-to-timer_cnt_export>),                //            timer_cnt.export
-		.lines_delay_export              (<connected-to-lines_delay_export>)               //          lines_delay.export
+		.timer_cnt_export                (<connected-to-timer_cnt_export>)                 //            timer_cnt.export
 	);
 

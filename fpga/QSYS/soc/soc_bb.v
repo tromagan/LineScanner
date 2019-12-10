@@ -59,6 +59,7 @@ module soc (
 	led_clk_on_blue_export,
 	led_clk_on_green_export,
 	led_clk_on_red_export,
+	lines_delay_export,
 	memory_mem_a,
 	memory_mem_ba,
 	memory_mem_ck,
@@ -87,8 +88,7 @@ module soc (
 	sdram0_byteenable,
 	sdram0_write,
 	status_reg_export,
-	timer_cnt_export,
-	lines_delay_export);	
+	timer_cnt_export);	
 
 	output		bus_clk_clk;
 	input	[31:0]	ctrl_reg_in_port;
@@ -149,6 +149,7 @@ module soc (
 	output	[31:0]	led_clk_on_blue_export;
 	output	[31:0]	led_clk_on_green_export;
 	output	[31:0]	led_clk_on_red_export;
+	output	[31:0]	lines_delay_export;
 	output	[14:0]	memory_mem_a;
 	output	[2:0]	memory_mem_ba;
 	output		memory_mem_ck;
@@ -178,5 +179,4 @@ module soc (
 	input		sdram0_write;
 	input	[31:0]	status_reg_export;
 	input	[31:0]	timer_cnt_export;
-	output	[31:0]	lines_delay_export;
 endmodule

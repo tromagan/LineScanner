@@ -59,6 +59,7 @@
 			led_clk_on_blue_export          : out   std_logic_vector(31 downto 0);                     -- export
 			led_clk_on_green_export         : out   std_logic_vector(31 downto 0);                     -- export
 			led_clk_on_red_export           : out   std_logic_vector(31 downto 0);                     -- export
+			lines_delay_export              : out   std_logic_vector(31 downto 0);                     -- export
 			memory_mem_a                    : out   std_logic_vector(14 downto 0);                     -- mem_a
 			memory_mem_ba                   : out   std_logic_vector(2 downto 0);                      -- mem_ba
 			memory_mem_ck                   : out   std_logic;                                         -- mem_ck
@@ -87,8 +88,7 @@
 			sdram0_byteenable               : in    std_logic_vector(15 downto 0)  := (others => 'X'); -- byteenable
 			sdram0_write                    : in    std_logic                      := 'X';             -- write
 			status_reg_export               : in    std_logic_vector(31 downto 0)  := (others => 'X'); -- export
-			timer_cnt_export                : in    std_logic_vector(31 downto 0)  := (others => 'X'); -- export
-			lines_delay_export              : out   std_logic_vector(31 downto 0)                      -- export
+			timer_cnt_export                : in    std_logic_vector(31 downto 0)  := (others => 'X')  -- export
 		);
 	end component soc;
 
@@ -153,6 +153,7 @@
 			led_clk_on_blue_export          => CONNECTED_TO_led_clk_on_blue_export,          --      led_clk_on_blue.export
 			led_clk_on_green_export         => CONNECTED_TO_led_clk_on_green_export,         --     led_clk_on_green.export
 			led_clk_on_red_export           => CONNECTED_TO_led_clk_on_red_export,           --       led_clk_on_red.export
+			lines_delay_export              => CONNECTED_TO_lines_delay_export,              --          lines_delay.export
 			memory_mem_a                    => CONNECTED_TO_memory_mem_a,                    --               memory.mem_a
 			memory_mem_ba                   => CONNECTED_TO_memory_mem_ba,                   --                     .mem_ba
 			memory_mem_ck                   => CONNECTED_TO_memory_mem_ck,                   --                     .mem_ck
@@ -181,7 +182,6 @@
 			sdram0_byteenable               => CONNECTED_TO_sdram0_byteenable,               --                     .byteenable
 			sdram0_write                    => CONNECTED_TO_sdram0_write,                    --                     .write
 			status_reg_export               => CONNECTED_TO_status_reg_export,               --           status_reg.export
-			timer_cnt_export                => CONNECTED_TO_timer_cnt_export,                --            timer_cnt.export
-			lines_delay_export              => CONNECTED_TO_lines_delay_export               --          lines_delay.export
+			timer_cnt_export                => CONNECTED_TO_timer_cnt_export                 --            timer_cnt.export
 		);
 

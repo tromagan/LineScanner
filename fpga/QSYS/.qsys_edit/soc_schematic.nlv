@@ -1,6 +1,6 @@
 # # File gsaved with Nlview version 6.3.8  2013-12-19 bk=1.2992 VDI=34 GEI=35
 # 
-preplace inst soc.pio_status_reg -pg 1 -lvl 4 -y 130
+preplace inst soc.pio_status_reg -pg 1 -lvl 4 -y 250
 preplace inst soc.hps_0.scu -pg 1
 preplace inst soc.hps_0.gmac1 -pg 1
 preplace inst soc.hps_0.qspi -pg 1
@@ -11,17 +11,18 @@ preplace inst soc.clock_bridge_0 -pg 1 -lvl 3 -y 2110
 preplace inst soc.hps_0.nand0 -pg 1
 preplace inst soc.hps_0.timer3 -pg 1
 preplace inst soc.hps_0.bridges -pg 1
-preplace inst soc.pll_0 -pg 1 -lvl 2 -y 250
-preplace inst soc.pio_led_clk_on_0 -pg 1 -lvl 4 -y 590
-preplace inst soc.pio_dma_buf_size -pg 1 -lvl 4 -y 370
+preplace inst soc.pll_0 -pg 1 -lvl 2 -y 210
+preplace inst soc.pio_lines_delay -pg 1 -lvl 4 -y 150
+preplace inst soc.pio_led_clk_on_0 -pg 1 -lvl 4 -y 700
+preplace inst soc.pio_dma_buf_size -pg 1 -lvl 4 -y 500
 preplace inst soc.hps_0.arm_gic_0 -pg 1
-preplace inst soc.pio_timer -pg 1 -lvl 4 -y 920
-preplace inst soc.pio_led_clk_on_1 -pg 1 -lvl 4 -y 690
+preplace inst soc.pio_timer -pg 1 -lvl 4 -y 1000
+preplace inst soc.pio_led_clk_on_1 -pg 1 -lvl 4 -y 800
 preplace inst soc.hps_0.axi_sdram -pg 1
 preplace inst soc.hps_0.rstmgr -pg 1
 preplace inst soc.hps_0.clk_0 -pg 1
-preplace inst soc.pio_led_clk_on_2 -pg 1 -lvl 4 -y 820
-preplace inst soc.pio_dma_adr -pg 1 -lvl 4 -y 250
+preplace inst soc.pio_led_clk_on_2 -pg 1 -lvl 4 -y 900
+preplace inst soc.pio_dma_adr -pg 1 -lvl 4 -y 370
 preplace inst soc.hps_0.sdrctl -pg 1
 preplace inst soc.hps_0.i2c0 -pg 1
 preplace inst soc.hps_0.uart0 -pg 1
@@ -32,7 +33,7 @@ preplace inst soc.hps_0.i2c1 -pg 1
 preplace inst soc.hps_0.uart1 -pg 1
 preplace inst soc.hps_0.fpgamgr -pg 1
 preplace inst soc.hps_0.eosc2 -pg 1
-preplace inst soc.pio_dma_status -pg 1 -lvl 4 -y 490
+preplace inst soc.pio_dma_status -pg 1 -lvl 4 -y 600
 preplace inst soc.hps_0.sdmmc -pg 1
 preplace inst soc.hps_0.i2c2 -pg 1
 preplace inst soc.hps_0.spim0 -pg 1
@@ -43,7 +44,7 @@ preplace inst soc.hps_0.usb0 -pg 1
 preplace inst soc.hps_0.spim1 -pg 1
 preplace inst soc.hps_0.sysmgr -pg 1
 preplace inst soc.hps_0.arm_a9_0 -pg 1
-preplace inst soc.hps_0 -pg 1 -lvl 3 -y 430
+preplace inst soc.hps_0 -pg 1 -lvl 3 -y 470
 preplace inst soc.hps_0.l3regs -pg 1
 preplace inst soc.hps_0.dcan1 -pg 1
 preplace inst soc.hps_0.usb1 -pg 1
@@ -63,25 +64,26 @@ preplace inst soc.hps_0.gmac0 -pg 1
 preplace inst soc.hps_0.timer1 -pg 1
 preplace inst soc.hps_0.hps_io -pg 1
 preplace inst soc.hps_0.fpga_interfaces -pg 1
-preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)soc.i_pll_0_refclk_50mhz,(SLAVE)pll_0.refclk) 1 0 2 NJ 260 NJ
-preplace netloc FAN_OUT<net_container>soc</net_container>(SLAVE)pio_led_clk_on_2.s1,(SLAVE)pio_dma_status.s1,(SLAVE)pio_led_clk_on_1.s1,(MASTER)hps_0.h2f_lw_axi_master,(SLAVE)pio_dma_buf_size.s1,(SLAVE)pio_dma_adr.s1,(SLAVE)pio_timer.s1,(SLAVE)pio_led_clk_on_0.s1,(SLAVE)pio_ctrl_reg.s1,(SLAVE)pio_status_reg.s1) 1 3 1 1040
-preplace netloc EXPORT<net_container>soc</net_container>(MASTER)pll_0.outclk2,(MASTER)soc.outclk_1) 1 2 3 NJ 300 NJ 240 NJ
-preplace netloc EXPORT<net_container>soc</net_container>(MASTER)soc.outclk_0,(MASTER)pll_0.outclk1) 1 2 3 NJ 340 NJ 360 NJ
-preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)pio_timer.external_connection,(SLAVE)soc.timer_cnt) 1 0 4 NJ 950 NJ 950 NJ 950 NJ
+preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)soc.timer_cnt,(SLAVE)pio_timer.external_connection) 1 0 4 NJ 1030 NJ 1030 NJ 1030 NJ
+preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)soc.led_clk_on_blue,(SLAVE)pio_led_clk_on_2.external_connection) 1 0 4 NJ 930 NJ 930 NJ 930 NJ
+preplace netloc EXPORT<net_container>soc</net_container>(MASTER)soc.outclk_0,(MASTER)pll_0.outclk1) 1 2 3 NJ 140 NJ 140 NJ
+preplace netloc FAN_OUT<net_container>soc</net_container>(SLAVE)hps_0.h2f_lw_axi_clock,(SLAVE)pio_timer.clk,(SLAVE)hps_0.f2h_sdram0_clock,(SLAVE)pio_status_reg.clk,(SLAVE)pio_ctrl_reg.clk,(MASTER)pll_0.outclk0,(SLAVE)pio_lines_delay.clk,(SLAVE)pio_dma_adr.clk,(SLAVE)pio_dma_status.clk,(SLAVE)pio_dma_buf_size.clk,(SLAVE)pio_led_clk_on_2.clk,(SLAVE)pio_led_clk_on_0.clk,(SLAVE)clock_bridge_0.in_clk,(SLAVE)pio_led_clk_on_1.clk) 1 2 2 530 610 1040
+preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)soc.led_clk_on_red,(SLAVE)pio_led_clk_on_0.external_connection) 1 0 4 NJ 730 NJ 730 NJ 730 NJ
 preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)soc.dma_adr,(SLAVE)pio_dma_adr.external_connection) 1 0 4 NJ 340 NJ 340 NJ 320 NJ
-preplace netloc FAN_OUT<net_container>soc</net_container>(MASTER)hps_0.h2f_reset,(SLAVE)pio_timer.reset,(SLAVE)pio_dma_buf_size.reset,(SLAVE)pio_led_clk_on_1.reset,(SLAVE)pio_status_reg.reset,(SLAVE)pio_ctrl_reg.reset,(SLAVE)pio_led_clk_on_0.reset,(SLAVE)pio_dma_adr.reset,(SLAVE)pio_dma_status.reset,(SLAVE)pio_led_clk_on_2.reset,(SLAVE)pll_0.reset) 1 1 3 190 240 NJ 240 960
-preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)pio_led_clk_on_1.external_connection,(SLAVE)soc.led_clk_on_green) 1 0 4 NJ 720 NJ 720 NJ 720 NJ
-preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)soc.dma_status,(SLAVE)pio_dma_status.external_connection) 1 0 4 NJ 390 NJ 390 NJ 390 NJ
-preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)pio_led_clk_on_0.external_connection,(SLAVE)soc.led_clk_on_red) 1 0 4 NJ 620 NJ 620 NJ 620 NJ
+preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)pio_ctrl_reg.external_connection,(SLAVE)soc.ctrl_reg) 1 0 4 NJ 60 NJ 60 NJ 60 NJ
+preplace netloc EXPORT<net_container>soc</net_container>(MASTER)soc.outclk_1,(MASTER)pll_0.outclk2) 1 2 3 NJ 300 NJ 360 NJ
+preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)soc.led_clk_on_green,(SLAVE)pio_led_clk_on_1.external_connection) 1 0 4 NJ 830 NJ 830 NJ 830 NJ
 preplace netloc EXPORT<net_container>soc</net_container>(MASTER)hps_0.f2h_irq0,(MASTER)soc.irq0) 1 3 2 NJ 480 NJ
-preplace netloc EXPORT<net_container>soc</net_container>(MASTER)clock_bridge_0.out_clk,(MASTER)soc.bus_clk) 1 3 2 NJ 2120 NJ
-preplace netloc FAN_OUT<net_container>soc</net_container>(SLAVE)pio_dma_adr.clk,(SLAVE)pio_status_reg.clk,(SLAVE)pio_dma_status.clk,(SLAVE)pio_dma_buf_size.clk,(SLAVE)pio_led_clk_on_1.clk,(SLAVE)pio_ctrl_reg.clk,(SLAVE)hps_0.f2h_sdram0_clock,(SLAVE)clock_bridge_0.in_clk,(SLAVE)hps_0.h2f_lw_axi_clock,(SLAVE)pio_led_clk_on_0.clk,(SLAVE)pio_timer.clk,(MASTER)pll_0.outclk0,(SLAVE)pio_led_clk_on_2.clk) 1 2 2 530 570 1020
-preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)pio_led_clk_on_2.external_connection,(SLAVE)soc.led_clk_on_blue) 1 0 4 NJ 850 NJ 850 NJ 850 NJ
-preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)soc.dma_buf_size,(SLAVE)pio_dma_buf_size.external_connection) 1 0 4 NJ 370 NJ 370 NJ 370 NJ
-preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)pio_status_reg.external_connection,(SLAVE)soc.status_reg) 1 0 4 NJ 160 NJ 160 NJ 160 NJ
-preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)soc.ctrl_reg,(SLAVE)pio_ctrl_reg.external_connection) 1 0 4 NJ 60 NJ 60 NJ 60 NJ
-preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)hps_0.f2h_sdram0_data,(SLAVE)soc.sdram0) 1 0 3 NJ 460 NJ 460 NJ
-preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)soc.memory,(SLAVE)hps_0.memory) 1 0 3 NJ 520 NJ 520 NJ
-preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)soc.hps_io,(SLAVE)hps_0.hps_io) 1 0 3 NJ 480 NJ 480 NJ
-levelinfo -pg 1 0 140 1320
-levelinfo -hier soc 150 170 360 750 1090 1240
+preplace netloc FAN_OUT<net_container>soc</net_container>(SLAVE)pio_dma_buf_size.reset,(SLAVE)pio_dma_status.reset,(SLAVE)pio_ctrl_reg.reset,(MASTER)hps_0.h2f_reset,(SLAVE)pio_led_clk_on_0.reset,(SLAVE)pio_led_clk_on_1.reset,(SLAVE)pio_lines_delay.reset,(SLAVE)pio_dma_adr.reset,(SLAVE)pio_led_clk_on_2.reset,(SLAVE)pio_timer.reset,(SLAVE)pll_0.reset,(SLAVE)pio_status_reg.reset) 1 1 3 190 360 NJ 360 980
+preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)pio_lines_delay.external_connection,(SLAVE)soc.lines_delay) 1 0 4 NJ 180 NJ 180 NJ 180 NJ
+preplace netloc FAN_OUT<net_container>soc</net_container>(SLAVE)pio_led_clk_on_2.s1,(SLAVE)pio_lines_delay.s1,(SLAVE)pio_ctrl_reg.s1,(MASTER)hps_0.h2f_lw_axi_master,(SLAVE)pio_dma_adr.s1,(SLAVE)pio_status_reg.s1,(SLAVE)pio_led_clk_on_0.s1,(SLAVE)pio_timer.s1,(SLAVE)pio_dma_buf_size.s1,(SLAVE)pio_dma_status.s1,(SLAVE)pio_led_clk_on_1.s1) 1 3 1 1000
+preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)pll_0.refclk,(SLAVE)soc.i_pll_0_refclk_50mhz) 1 0 2 NJ 220 NJ
+preplace netloc EXPORT<net_container>soc</net_container>(MASTER)soc.bus_clk,(MASTER)clock_bridge_0.out_clk) 1 3 2 NJ 2120 NJ
+preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)pio_status_reg.external_connection,(SLAVE)soc.status_reg) 1 0 4 NJ 300 NJ 300 NJ 280 NJ
+preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)soc.sdram0,(SLAVE)hps_0.f2h_sdram0_data) 1 0 3 NJ 500 NJ 500 NJ
+preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)hps_0.memory,(SLAVE)soc.memory) 1 0 3 NJ 560 NJ 560 NJ
+preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)pio_dma_status.external_connection,(SLAVE)soc.dma_status) 1 0 4 NJ 630 NJ 630 NJ 630 NJ
+preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)pio_dma_buf_size.external_connection,(SLAVE)soc.dma_buf_size) 1 0 4 NJ 380 NJ 380 NJ 380 NJ
+preplace netloc EXPORT<net_container>soc</net_container>(SLAVE)soc.hps_io,(SLAVE)hps_0.hps_io) 1 0 3 NJ 520 NJ 520 NJ
+levelinfo -pg 1 0 140 1340
+levelinfo -hier soc 150 170 360 750 1110 1260
