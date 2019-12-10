@@ -1,1 +1,4 @@
-
+sw/hps/*.o
+sw/hps/line_scanner_app
+sw/host/*.pcm
+sw/host/*.png

@@ -76,7 +76,8 @@ begin
 end
 
 initial forever #(20/2)     CLK_50 = ~CLK_50;
-initial forever #(3.90625)   CLK_80 = ~CLK_80;
+initial forever #(6.25)   CLK_80 = ~CLK_80;
+//initial forever #(3.90625)   CLK_80 = ~CLK_80;
 //initial forever #(125/2)    clk_0 = ~clk_0;
 initial forever #(62.5)    clk_0 = ~clk_0;
 
@@ -101,9 +102,9 @@ begin
     // force top.w_g_clk_on_off = 24'd2592;
     // force top.w_b_clk_on_off = 24'd2592;
 
-    force top.w_r_clk_on_off = 24'd5;
-    force top.w_g_clk_on_off = 24'd15;
-    force top.w_b_clk_on_off = 24'd0;
+    force top.w_r_clk_on_off = 24'd10;
+    force top.w_g_clk_on_off = 24'd10;
+    force top.w_b_clk_on_off = 24'd10;
 
     //force top.w_cis_lines_delay = 24'd222;
     force top.w_cis_mode = 2'd1;

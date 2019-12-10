@@ -296,8 +296,8 @@ int main( int argc, char *argv[] )
   // SET_LED_CLK_B(4);      //
 
   SET_LED_CLK_R(3);      //
-  SET_LED_CLK_G(4);      //
-  SET_LED_CLK_B(4);      //
+  SET_LED_CLK_G(3);      //
+  SET_LED_CLK_B(3);      //
 
   
   CLR_RST();

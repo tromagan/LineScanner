@@ -73,7 +73,7 @@ begin
         r_clk_div  <= 5'd1;
     else
     begin
-        if(r_clk_div == 5'd16)
+        if(r_clk_div == 5'd10)
             r_clk_div <= 5'd1;
         else
             r_clk_div <= r_clk_div + 1'b1;
