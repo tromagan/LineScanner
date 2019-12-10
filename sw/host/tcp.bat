@@ -1,0 +1,2 @@
+python tcp_linescanner_server.py
+python parser_RGB_bin.py

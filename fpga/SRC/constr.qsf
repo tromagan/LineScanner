@@ -1,0 +1,1 @@
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to *
