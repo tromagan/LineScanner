@@ -279,9 +279,9 @@ int main( int argc, char *argv[] )
   socket_connect();
 #endif
 
-  // SET_LED_CLK_R(2592/2);
-  // SET_LED_CLK_G(2592/2);
-  // SET_LED_CLK_B(1000/2);
+  SET_LED_CLK_R(700);
+  SET_LED_CLK_G(970);
+  SET_LED_CLK_B(550);
 
   // SET_LED_CLK_R(2000);      //2047
   // SET_LED_CLK_G(2000);      //2044
@@ -295,9 +295,9 @@ int main( int argc, char *argv[] )
   // SET_LED_CLK_G(4);      //
   // SET_LED_CLK_B(4);      //
 
-  SET_LED_CLK_R(3);      //
-  SET_LED_CLK_G(3);      //
-  SET_LED_CLK_B(3);      //
+  // SET_LED_CLK_R(3);      //
+  // SET_LED_CLK_G(3);      //
+  // SET_LED_CLK_B(3);      //
 
   
   CLR_RST();

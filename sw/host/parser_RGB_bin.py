@@ -130,7 +130,7 @@ else:
 
 ###correcting
 for idx in range(3):
-    rgb[:,:,idx] = rgb[:,:,idx] - rgb_aver[:,:,idx]
+   rgb[:,:,idx] = rgb[:,:,idx] - rgb_aver[:,:,idx]
 
 
 ###check for negative samples
