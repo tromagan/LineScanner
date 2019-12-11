@@ -83,8 +83,6 @@ wire    [  2 : 0 ]  w_fifo_rd;
 wire    [  2 : 0 ]  w_fifo_empty;
 reg     [  2 : 0 ]  r_fifo_empty = 3'd0;
 wire    [  2 : 0 ]  w_fifo_aempty;
-wire                w_fifo_common_empty;
-reg                 r_fifo_common_empty = 1'b0;
 
 reg     [ 1 : 0 ]   r_rgb_cnt = 2'd0;
 
@@ -201,11 +199,8 @@ generate
     end
 endgenerate
 
-//if any fifo is empty => common_empty is 1'b1
-//assign w_fifo_common_empty      = |w_fifo_empty;    
 
-//assign w_fifo_rd = r_fifo_rd & {3{~w_fifo_common_empty & ~AFULL}};
-assign w_fifo_rd = r_fifo_rd & ~w_fifo_empty & {3{~AFULL}};
+assign w_fifo_rd = r_fifo_rd & {3{~(|w_fifo_empty)}} & {3{~AFULL}};
 
 always @(posedge CLK)
 begin
@@ -215,13 +210,11 @@ begin
     r_fifo_ovr      <= w_fifo_full & w_fifo_din_dv;
     r_fifo_ovr_dout <= |r_fifo_ovr;
 
-    //r_fifo_common_empty <= w_fifo_common_empty;
     r_fifo_empty    <= w_fifo_empty;
 end
 
 always @(posedge CLK)
-//if((RST == 1'b1) || (r_fifo_common_empty == 1'b1))
-if((RST == 1'b1) || (&r_fifo_empty == 1'b1))
+if((RST == 1'b1) || (|r_fifo_empty == 1'b1))
 begin
     r_rgb_cnt <= 2'd0;
     r_fifo_rd <= 3'd0;
@@ -233,7 +226,7 @@ begin
     begin
         case(r_rgb_cnt)
             2'd0    :   begin
-                            if( w_fifo_empty[2] == 1'b0 && w_fifo_empty[1] == 1'b0)
+                            if( w_fifo_empty[2] == 1'b0 && w_fifo_empty[1] == 1'b0)     //RG
                             begin
                                 r_fifo_rd <= 3'b110;
                                 r_rgb_cnt <= 2'd1;
@@ -243,7 +236,7 @@ begin
                         end
 
             2'd1    :   begin
-                            if( w_fifo_empty[2] == 1'b0 && w_fifo_empty[0] == 1'b0)
+                            if( w_fifo_empty[2] == 1'b0 && w_fifo_empty[0] == 1'b0)     //BR
                             begin
                                 r_fifo_rd <= 3'b101;
                                 r_rgb_cnt <= 2'd2;
@@ -253,7 +246,7 @@ begin
                         end
 
             2'd2    :   begin
-                            if( w_fifo_empty[1] == 1'b0 && w_fifo_empty[0] == 1'b0)
+                            if( w_fifo_empty[1] == 1'b0 && w_fifo_empty[0] == 1'b0)     //GB
                             begin
                                 r_fifo_rd <= 3'b011;
                                 r_rgb_cnt <= 2'd0;
@@ -268,6 +261,7 @@ begin
                         end
         endcase
     end
+
 
     case(r_fifo_rd_d)
         3'b110 :    r_dout <= { w_fifo_dout[2], w_fifo_dout[1]};  //RG
