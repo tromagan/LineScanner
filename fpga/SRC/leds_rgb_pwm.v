@@ -23,9 +23,9 @@ module leds_rgb_pwm
     input   wire                CLK,
     input   wire                RST,
 
-    input   wire    [  4 : 0 ]  DUTY_CYCL_R,
-    input   wire    [  4 : 0 ]  DUTY_CYCL_G,
-    input   wire    [  4 : 0 ]  DUTY_CYCL_B,
+    input   wire    [ 23 : 0 ]  DUTY_CYCL_R,
+    input   wire    [ 23 : 0 ]  DUTY_CYCL_G,
+    input   wire    [ 23 : 0 ]  DUTY_CYCL_B,
 
     input   wire                START,
     input   wire                END,
@@ -35,11 +35,11 @@ module leds_rgb_pwm
 
 );
 
-reg     [ 4 : 0 ]   r_duty_cycl_mux = 5'd0;             //from 0 to 10. 0 - always OFF. 10 - always ON. 1 - minimal ON on 1/80 usec.
+reg     [ 23 : 0 ]  r_duty_cycl_mux = 24'd0;
 reg                 r_start = 1'b0, r_en = 1'b0;
 wire                w_en;
-reg     [ 4 : 0 ]   r_clk_div = 5'd0;
-reg     [ 2 : 0 ]   r_lrgb_iob;
+reg     [ 23 : 0 ]  r_clk_cnt = 24'd0;
+reg     [  2 : 0 ]  r_lrgb_iob;
 
 always @(posedge CLK)
 begin
@@ -66,22 +66,20 @@ assign w_en = (START | r_en) & (~END);
 
 always @(posedge CLK)
 if(RST == 1'b1)
+begin
     r_lrgb_iob <= 3'b111;
+    r_clk_cnt  <= 24'd1;
+end
 else
 begin
     if((START & ~r_start) == 1'b1)
-        r_clk_div  <= 5'd1;
+        r_clk_cnt  <= 24'd1;
     else
-    begin
-        if(r_clk_div == 5'd10)
-            r_clk_div <= 5'd1;
-        else
-            r_clk_div <= r_clk_div + 1'b1;
-    end
+        r_clk_cnt <= r_clk_cnt + 1'b1;
 
     if(w_en == 1'b1)
     begin
-        if(r_duty_cycl_mux >= r_clk_div)
+        if(r_clk_cnt <= r_duty_cycl_mux)
             r_lrgb_iob <= ~RGB;
         else
             r_lrgb_iob <= 3'b111;;

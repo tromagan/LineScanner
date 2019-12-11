@@ -5,9 +5,6 @@ module cis_controller
     input   wire                CLK,
     input   wire                RST,
 
-    input   wire                CLK_HIRES,
-    input   wire                CLK_HIRES_RST,
-
     input   wire    [ 1 : 0 ]   MODE,
     input   wire    [23 : 0 ]   RGB_LINES_DELAY,
     input   wire                EXTERNAL_START,
@@ -210,12 +207,12 @@ begin
     //         r_lrgb_iob <= 3'b111;
 
 
-    if(r_clk_cnt == CNT_STATE_LEDS_ON)
+    if(r_clk_cnt == CNT_STATE_LEDS_ON - 2)
         r_lrgb_start <= 1'b1;
     else
         r_lrgb_start <= 1'b0;
 
-    if(r_clk_cnt == (CNT_STATE_LEDS_ON + LEDS_CNT))
+    if(r_clk_cnt == (CNT_STATE_LEDS_ON + LEDS_CNT - 2))
         r_lrgb_end <= 1'b1;
     else
         r_lrgb_end <= 1'b0;
@@ -253,16 +250,16 @@ end
 
 leds_rgb_pwm leds_rgb_pwm
 (
-    .CLK            ( CLK_HIRES     ),     // in   , u[1],
-    .RST            ( CLK_HIRES_RST ),     // in   , u[1],
+    .CLK            ( CLK           ),     // in   , u[1],
+    .RST            ( RST           ),     // in   , u[1],
     
     .START          ( r_lrgb_start  ),     // in   , u[1],
     .END            ( r_lrgb_end    ),     // in   , u[1],
     .RGB            ( r_lrgb        ),     // in   , u[3],
 
-    .DUTY_CYCL_R    ( R_ON_CNT[4:0] ),     // in   , u[5],
-    .DUTY_CYCL_G    ( G_ON_CNT[4:0] ),     // in   , u[5],
-    .DUTY_CYCL_B    ( B_ON_CNT[4:0] ),     // in   , u[5],
+    .DUTY_CYCL_R    ( R_ON_CNT      ),     // in   , u[],
+    .DUTY_CYCL_G    ( G_ON_CNT      ),     // in   , u[],
+    .DUTY_CYCL_B    ( B_ON_CNT      ),     // in   , u[],
 
     .LRGB           ( LRGB          )      // out  , u[3],
 );

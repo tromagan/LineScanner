@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-//import testbench_package::*; 
+import testbench_package::*; 
 
 module tb_top();
 
@@ -62,7 +62,7 @@ reg                     mode_cyclic;
 
 wire    [ 15 : 0 ]      w_dma_done_cnt;
 
-//CUniversalRand          v1;
+
 
 localparam              size_dma_alloc = 32*1024*1024;
 localparam              size_dma_alloc_words = size_dma_alloc >> 2;
@@ -102,12 +102,12 @@ begin
     // force top.w_g_clk_on_off = 24'd2592;
     // force top.w_b_clk_on_off = 24'd2592;
 
-    force top.w_r_clk_on_off = 24'd10;
-    force top.w_g_clk_on_off = 24'd10;
-    force top.w_b_clk_on_off = 24'd10;
+    force top.w_r_clk_on_off = 24'd0;
+    force top.w_g_clk_on_off = 24'd2592;
+    force top.w_b_clk_on_off = 24'd100;
 
     //force top.w_cis_lines_delay = 24'd222;
-    force top.w_cis_mode = 2'd1;
+    force top.w_cis_mode = 2'd0;
     force top.w_cis_lines_delay = 24'd10000;
 
     force top.w_sensor_reset = 1'b1;
@@ -161,9 +161,9 @@ top top
     .LED            (               )
 );
 
-assign wr_data_count = 13'd0;
+//assign wr_data_count = 13'd0;
 
-assign top.w_wr_afull = (wr_data_count >= 13'd4080) ? 1'b1 : 1'b0;
+
 
 initial
 begin
@@ -175,8 +175,11 @@ begin
     end
 end
 
-
 /*
+CUniversalRand          v1;
+//assign top.w_wr_afull = (wr_data_count >= 13'd4080) ? 1'b1 : 1'b0;
+assign top.w_wr_afull = (wr_data_count >= 13'd1080) ? 1'b1 : 1'b0;
+
 fifo_generator_0 fifo_generator_0 
 (
     .rst            ( r_startup_rst         ),                      // input wire rst
@@ -278,7 +281,8 @@ if(sdram0_write & ~sdram0_waitrequest)
 
 initial
 begin
-    v1 = new(10,200);
+    //v1 = new(10,200);
+    v1 = new(10,150);
 
     @(posedge dma_on);
 
@@ -381,7 +385,9 @@ begin
     //$display("start wait %t",$time());
     //#800000;
     //#400000;
-    #100000;
+    
+    //#100000;
+    
     //#1000;
     //$display("end wait %t",$time());
   end

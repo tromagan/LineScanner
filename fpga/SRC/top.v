@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 //`default_nettype none
 
-`define SIM
+//`define SIM
 
 module top
 (
@@ -174,9 +174,6 @@ cis_controller cis_controller
 (
     .CLK                    ( w_clk_0           ),
     .RST                    ( w_sensor_rst      ),
-
-    .CLK_HIRES              ( w_bus_clk         ),
-    .CLK_HIRES_RST          ( w_sensor_reset    ),
 
     .MODE                   ( w_cis_mode        ),
     .RGB_LINES_DELAY        ( w_cis_lines_delay ),
