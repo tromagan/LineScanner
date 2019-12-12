@@ -102,9 +102,9 @@ begin
     // force top.w_g_clk_on_off = 24'd2592;
     // force top.w_b_clk_on_off = 24'd2592;
 
-    force top.w_r_clk_on_off = 24'd0;
-    force top.w_g_clk_on_off = 24'd2592;
-    force top.w_b_clk_on_off = 24'd100;
+    force top.w_r_clk_on_off = ((200 << 16) | 10);
+    force top.w_g_clk_on_off = ((0 << 16) | 0);
+    force top.w_b_clk_on_off = ((1 << 16) | 0);
 
     //force top.w_cis_lines_delay = 24'd222;
     force top.w_cis_mode = 2'd0;

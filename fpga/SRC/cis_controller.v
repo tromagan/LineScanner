@@ -9,9 +9,9 @@ module cis_controller
     input   wire    [23 : 0 ]   RGB_LINES_DELAY,
     input   wire                EXTERNAL_START,
 
-    input   wire    [23 : 0 ]   R_ON_CNT,
-    input   wire    [23 : 0 ]   G_ON_CNT,
-    input   wire    [23 : 0 ]   B_ON_CNT,
+    input   wire    [31 : 0 ]   R_ON_CNT,
+    input   wire    [31 : 0 ]   G_ON_CNT,
+    input   wire    [31 : 0 ]   B_ON_CNT,
 
     output  wire                SI_TOGGLE,
     output  wire    [ 1 : 0 ]   SI_CNT,

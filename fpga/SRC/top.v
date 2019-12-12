@@ -112,7 +112,7 @@ wire    [ 27 : 0 ]      w_dma_start_address;
 wire    [ 27 : 0 ]      w_dma_buf_size;
 wire                    w_sensor_reset;
 wire                    w_linux_reset;
-wire    [ 23 : 0 ]      w_r_clk_on_off, w_g_clk_on_off, w_b_clk_on_off;
+wire    [ 31 : 0 ]      w_r_clk_on_off, w_g_clk_on_off, w_b_clk_on_off;
 wire                    w_dma_cmd_fifo_empty, w_dma_cmd_fifo_aempty;
 wire    [ 15 : 0 ]      w_dma_done_cnt;
 wire    [ 31 : 0 ]      w_timer;

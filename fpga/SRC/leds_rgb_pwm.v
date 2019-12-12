@@ -23,9 +23,9 @@ module leds_rgb_pwm
     input   wire                CLK,
     input   wire                RST,
 
-    input   wire    [ 23 : 0 ]  DUTY_CYCL_R,
-    input   wire    [ 23 : 0 ]  DUTY_CYCL_G,
-    input   wire    [ 23 : 0 ]  DUTY_CYCL_B,
+    input   wire    [ 31 : 0 ]  DUTY_CYCL_R,
+    input   wire    [ 31 : 0 ]  DUTY_CYCL_G,
+    input   wire    [ 31 : 0 ]  DUTY_CYCL_B,
 
     input   wire                START,
     input   wire                END,
@@ -35,10 +35,16 @@ module leds_rgb_pwm
 
 );
 
-reg     [ 23 : 0 ]  r_duty_cycl_mux = 24'd0;
+reg     [ 31 : 0 ]  r_duty_cycl_mux = 32'd0;
+wire    [ 15 : 0 ]  w_duty_high_cnt, w_duty_low_cnt;
+
 reg                 r_start = 1'b0, r_en = 1'b0;
 wire                w_en;
-reg     [ 23 : 0 ]  r_clk_cnt = 24'd0;
+
+//reg     [ 23 : 0 ]  r_clk_cnt = 24'd0;
+
+reg                 r_cnt_sel = 1'b0;
+reg     [ 15 : 0 ]  r_cnt_high, r_cnt_low;
 reg     [  2 : 0 ]  r_lrgb_iob;
 
 always @(posedge CLK)
@@ -62,31 +68,80 @@ begin
     endcase
 end
 
+assign w_duty_high_cnt = r_duty_cycl_mux[ 15 :  0 ];
+assign w_duty_low_cnt  = r_duty_cycl_mux[ 31 : 16 ];
+
 assign w_en = (START | r_en) & (~END);
 
 always @(posedge CLK)
-if(RST == 1'b1)
+if((RST == 1'b1) || (w_en == 1'b0))
 begin
     r_lrgb_iob <= 3'b111;
-    r_clk_cnt  <= 24'd1;
+    r_cnt_sel  <= 1'b0;
+    r_cnt_high <= 16'd1;
+    r_cnt_low  <= 16'd1;
 end
 else
 begin
-    if((START & ~r_start) == 1'b1)
-        r_clk_cnt  <= 24'd1;
-    else
-        r_clk_cnt <= r_clk_cnt + 1'b1;
-
-    if(w_en == 1'b1)
+    if(r_cnt_sel == 1'b0 && |w_duty_high_cnt == 1'b1)   //leds ON 
     begin
-        if(r_clk_cnt <= r_duty_cycl_mux)
-            r_lrgb_iob <= ~RGB;
+        r_lrgb_iob <= ~RGB;
+
+        if(w_duty_high_cnt > r_cnt_high)
+        begin
+            r_cnt_high <= r_cnt_high + 1'b1;
+        end
         else
-            r_lrgb_iob <= 3'b111;;
+        begin
+            r_cnt_high <= 16'd1;
+            
+            if(|w_duty_low_cnt == 1'b1)
+                r_cnt_sel  <= 1'b1;
+            else
+                r_cnt_sel  <= 1'b0;
+        end
     end
-    else
+    else                    //leds OFF
+    begin
         r_lrgb_iob <= 3'b111;
+
+        if(w_duty_low_cnt > r_cnt_low)
+            r_cnt_low <= r_cnt_low + 1'b1;
+        else
+        begin
+            r_cnt_low <= 16'd1;
+
+            if(|w_duty_high_cnt == 1'b1)
+                r_cnt_sel  <= 1'b0;
+            else
+                r_cnt_sel  <= 1'b1;
+        end
+    end
 end
+
+// always @(posedge CLK)
+// if(RST == 1'b1)
+// begin
+//     r_lrgb_iob <= 3'b111;
+//     r_clk_cnt  <= 24'd1;
+// end
+// else
+// begin
+//     if((START & ~r_start) == 1'b1)
+//         r_clk_cnt  <= 24'd1;
+//     else
+//         r_clk_cnt <= r_clk_cnt + 1'b1;
+
+//     if(w_en == 1'b1)
+//     begin
+//         if(r_clk_cnt <= r_duty_cycl_mux)
+//             r_lrgb_iob <= ~RGB;
+//         else
+//             r_lrgb_iob <= 3'b111;;
+//     end
+//     else
+//         r_lrgb_iob <= 3'b111;
+// end
 
 
 
