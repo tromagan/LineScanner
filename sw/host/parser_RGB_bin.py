@@ -6,7 +6,8 @@ import numpy as np
 
 line_scan_bytes_size = 2592 * 6
 fname = "f:/testfile.pcm"
-#fname = "f:/testfile_03.bin"
+#fname = "f:/testfile_leds_off.pcm"
+#fname = "f:/testfile_white.pcm"
 #fname = "d:/Dropbox/Upload/black/testfile_black_leds_off.pcm"
 
 
@@ -84,7 +85,6 @@ def calc_average(rgb):
 
 
 
-
 f = open(fname, "rb")
 
 fsize   = os.path.getsize(fname)
@@ -129,8 +129,8 @@ else:
     rgb_aver = load_colors_from_file(["out_red_aver.pcm", "out_green_aver.pcm", "out_blue_aver.pcm"])
 
 ###correcting
-for idx in range(3):
-   rgb[:,:,idx] = rgb[:,:,idx] - rgb_aver[:,:,idx]
+#for idx in range(3):
+#   rgb[:,:,idx] = rgb[:,:,idx] - rgb_aver[:,:,idx]
 
 
 ###check for negative samples

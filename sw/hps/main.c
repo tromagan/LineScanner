@@ -279,25 +279,19 @@ int main( int argc, char *argv[] )
   socket_connect();
 #endif
 
-  SET_LED_CLK_R(700);
-  SET_LED_CLK_G(970);
-  SET_LED_CLK_B(550);
+/////////////////////////////
+//  SET_LED_CLK_R(LED_OFF << 16 | LED_ON)
+/////////////////////////////
 
-  // SET_LED_CLK_R(2000);      //2047
-  // SET_LED_CLK_G(2000);      //2044
-  // SET_LED_CLK_B(2000);      //1653
 
-  // SET_LED_CLK_R(1500);      //2045
-  // SET_LED_CLK_G(1500);      //2044
-  // SET_LED_CLK_B(2000);      //2045
+  // SET_LED_CLK_R((100 << 16) | 70);
+  // SET_LED_CLK_G((100 << 16) | 120);
+  // SET_LED_CLK_B((100 << 16) | 40);
 
-  // SET_LED_CLK_R(4);      //
-  // SET_LED_CLK_G(4);      //
-  // SET_LED_CLK_B(4);      //
+  SET_LED_CLK_R((40 << 16) | 100);
+  SET_LED_CLK_G((40 << 16) | 100);
+  SET_LED_CLK_B((150 << 16) | 100);
 
-  // SET_LED_CLK_R(3);      //
-  // SET_LED_CLK_G(3);      //
-  // SET_LED_CLK_B(3);      //
 
   
   CLR_RST();
@@ -309,7 +303,7 @@ int main( int argc, char *argv[] )
   printf("timer: %d\n", GET_TIMER_REG());
 
   SET_RST();
-  SET_RST_CIS();
+  //SET_RST_CIS();
 
 
 
