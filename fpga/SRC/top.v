@@ -6,8 +6,7 @@
 module top
 (
     input   wire                    FPGA_CLK1_50,
-    input   wire                    FPGA_CLK2_50,
-    
+
     //ADC CLK   AF7
     output  wire                    CLKC,
     // AH2 AH3 AG5 AH4 AH6 AH5 T12 T8 U11 Y5 Y4 W8
@@ -25,8 +24,10 @@ module top
 
     input   wire    [  3 : 0 ]      SW,
 
-    output  wire                    DBG_GPIO_1_34,
-    output  wire                    DBG_GPIO_1_35,
+    // {"GPIO_1[24] AE24", "GPIO_1[23] AE20", "GPIO_1[20] AE19"
+    input   wire    [ 2 : 0 ]       ENC_P,      // { A, B, Z}
+    // {"GPIO_1[33] AE23", "GPIO_1[25] AD20", "GPIO_1[22] AD19"
+    input   wire    [ 2 : 0 ]       ENC_N,      // {!A,!B,!Z}
 
 
     inout   wire                    HPS_CONV_USB_N,
@@ -158,6 +159,9 @@ genvar                  g;
 
 wire    w_global_dbg;
 
+wire    [  2 : 0 ]      w_encoder;
+reg     [  2 : 0 ]      r_encoder;
+
 reg_sync
 #(
     .INIT                   ( 1'b1              )
@@ -240,6 +244,19 @@ assign w_fifo_din    = w_pixels;
 assign w_fifo_din_dv = w_pixels_dv;
 assign w_pixels_afull= w_wr_afull;
 
+
+
+ibuf_lvds   ibuf_lvds_encoder
+(
+    .datain     ( ENC_P     ),
+    .datain_b   ( ENC_N     ),
+    .dataout    ( w_encoder )
+);
+
+always @(posedge w_clk_1)
+begin
+    r_encoder <= w_encoder;
+end
 
 
 `ifndef SIM
@@ -505,54 +522,6 @@ ddio_out_sclkc
     .dataout    ( SCLKC     )
 );
 
-
-
-
-altddio_out 
-#(
-    .width                  (1),
-    .intended_device_family ("Cyclone V")
-) 
-ddio_out_dbg_clk0 
-(
-    .datain_h   ( 1'b1      ),
-    .datain_l   ( 1'b0      ),
-    .outclock   ( w_clk_0   ),
-    .oe         ( 1'b1      ),
-    .outclocken ( 1'b1      ),
-    
-    .aset       ( 1'b0      ),
-    .aclr       ( 1'b0      ),
-    
-    .sset       ( 1'b0      ),
-    .sclr       ( 1'b0      ),
-    
-    .oe_out     (           ),
-    .dataout    ( DBG_GPIO_1_34 )
-);
-
-altddio_out 
-#(
-    .width                  (1),
-    .intended_device_family ("Cyclone V")
-) 
-ddio_out_dbg_clk1 
-(
-    .datain_h   ( 1'b1      ),
-    .datain_l   ( 1'b0      ),
-    .outclock   ( w_clk_1   ),
-    .oe         ( 1'b1      ),
-    .outclocken ( 1'b1      ),
-    
-    .aset       ( 1'b0      ),
-    .aclr       ( 1'b0      ),
-    
-    .sset       ( 1'b0      ),
-    .sclr       ( 1'b0      ),
-    
-    .oe_out     (           ),
-    .dataout    ( DBG_GPIO_1_35 )
-);
 `endif
 
 `ifdef SIM
@@ -570,6 +539,6 @@ assign LED[3] = 1'b0;
 assign LED[2] = 1'b0;
 assign LED[1] = 1'b0;
 
-assign LED[0] = {7'd0,w_si_toggle | ^w_lrgb | ^w_si_cnt | ^w_adc_data} | {7'd0,w_global_dbg};
+assign LED[0] = {7'd0, ^r_encoder | w_si_toggle | ^w_lrgb | ^w_si_cnt | ^w_adc_data} | {7'd0,w_global_dbg};
 
 endmodule

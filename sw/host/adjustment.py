@@ -5,11 +5,14 @@ from PIL import Image, ImageDraw
 import numpy as np
 
 line_scan_bytes_size = 2592 * 6
-#fname_dark  = "f:/testfile_dark.pcm"
-#fname_white = "f:/testfile_white_0.pcm"
 
-fname_dark  = "/home/denc/Dropbox/Upload/adjust/testfile_dark.pcm"
-fname_white = "/home/denc/Dropbox/Upload/adjust/testfile_white_0.pcm"
+fname_dark  = "f:/testfile_dark.pcm"
+#fname_white = "f:/testfile_white_0.pcm"
+#fname_white = "f:/testfile_white_1.pcm"
+fname_white = "f:/testfile.pcm"
+
+#fname_dark  = "/home/denc/Dropbox/Upload/adjust/testfile_dark.pcm"
+#fname_white = "/home/denc/Dropbox/Upload/adjust/testfile_white_0.pcm"
 
 
 
@@ -94,15 +97,28 @@ save_colors_file(np.reshape(white_mean, (1, 2592,3)), 1, ["out_red_white.pcm", "
 
 #print(dark_mean.shape)
 #print(white_mean.shape)
-
+Vdmax = np.max(dark_mean)
 Vdmin = np.min(dark_mean)
-print("Vdmin = %d" % Vdmin)
+print("Vdmin = %d, Vdmax = %d" % (Vdmin, Vdmax))
+
+
+
 
 Vp  = np.zeros_like(white_mean)
 VEp = np.zeros_like(white_mean)
 for i in range(3):
     Vp[:,i]  = white_mean[:,i] - Vdmin
     VEp[:,i] = white_mean[:,i] - dark_mean[:]
+
+#Check UEp for < 50%
+VEp_max = np.max(VEp[:,:], axis = 0)
+VEp_min = np.min(VEp[:,:], axis = 0)
+UEp = ((VEp_max - VEp_min)/VEp_max) * 100
+print("*****")
+print(VEp_max)
+print(VEp_min)
+print(UEp)
+print("*****")
 
 
 
@@ -143,7 +159,15 @@ else:
     print("Vp_avg_b ok!")
 
 
-Вычислить UEp и увидеть что она меньше 50%
-Вычислить Ud и проверить на условие из таблицы
+
+#Check for Ud < Vpmax/2.5
+Ud = Vdmax - Vdmin
+if( np.all( [(Ud * 2.5) < Vpmax]) ):
+    #pass
+    print("Ud value %d ok!" % Ud)
+else:
+    print("Ud value error!")
+
+
 
 input("done, press Enter...")

@@ -283,14 +283,21 @@ int main( int argc, char *argv[] )
 //  SET_LED_CLK_R(LED_OFF << 16 | LED_ON)
 /////////////////////////////
 
+  SET_LED_CLK_R((80 << 16) | 100);
+  SET_LED_CLK_G((60 << 16) | 100);
+  SET_LED_CLK_B((220 << 16) | 100);
 
-  // SET_LED_CLK_R((100 << 16) | 70);
-  // SET_LED_CLK_G((100 << 16) | 120);
-  // SET_LED_CLK_B((100 << 16) | 40);
+  // SET_LED_CLK_R((85 << 16) | 100);
+  // SET_LED_CLK_G((80 << 16) | 100);
+  // SET_LED_CLK_B((220<< 16) | 100);
 
-  SET_LED_CLK_R((40 << 16) | 100);
-  SET_LED_CLK_G((40 << 16) | 100);
-  SET_LED_CLK_B((150 << 16) | 100);
+  // SET_LED_CLK_R((40 << 16) | 0);
+  // SET_LED_CLK_G((40 << 16) | 0);
+  // SET_LED_CLK_B((40 << 16) | 0);
+
+  // SET_LED_CLK_R((0 << 16) | 10);
+  // SET_LED_CLK_G((0 << 16) | 10);
+  // SET_LED_CLK_B((0 << 16) | 10);
 
 
   

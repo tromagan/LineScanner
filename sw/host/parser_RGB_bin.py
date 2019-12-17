@@ -5,13 +5,10 @@ from PIL import Image, ImageDraw
 import numpy as np
 
 line_scan_bytes_size = 2592 * 6
-#fname = "f:/testfile.pcm"
-#fname = "f:/testfile_leds_off.pcm"
-#fname = "f:/testfile_white.pcm"
-#fname = "d:/Dropbox/Upload/black/testfile_black_leds_off.pcm"
-
-
-fname = "/home/denc/Dropbox/Upload/adjust/testfile_white_0.pcm"
+fname = "f:/testfile.pcm"
+#fname  = "f:/testfile_dark.pcm"
+#fname  = "f:/testfile_white_1.pcm"
+#fname = "/home/denc/Dropbox/Upload/adjust/testfile_white_0.pcm"
 
 
 
@@ -129,18 +126,16 @@ save_colors_file(rgb, 1)
 
 calc_store_mean = 0
 ###calculate 3 RGB averages on black lines
-'''
 if calc_store_mean == 1:
     rgb_aver = calc_average(rgb)
     save_colors_file(rgb_aver, 1, ["out_red_aver.pcm", "out_green_aver.pcm", "out_blue_aver.pcm"])
 else:
     ###if correction samples already calculated and stored
     rgb_aver = load_colors_from_file(["out_red_aver.pcm", "out_green_aver.pcm", "out_blue_aver.pcm"])
-'''
 
 ###correcting
-#for idx in range(3):
-#   rgb[:,:,idx] = rgb[:,:,idx] - rgb_aver[:,:,idx]
+for idx in range(3):
+   rgb[:,:,idx] = rgb[:,:,idx] - rgb_aver[:,:,idx]
 
 
 ###check for negative samples
