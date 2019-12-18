@@ -25,9 +25,9 @@ module top
     input   wire    [  3 : 0 ]      SW,
 
     // {"GPIO_1[24] AE24", "GPIO_1[23] AE20", "GPIO_1[20] AE19"
-    input   wire    [ 2 : 0 ]       ENC_P,      // { A, B, Z}
+    input   wire    [ 2 : 0 ]       ENC_P,      // {X, A, B}
     // {"GPIO_1[33] AE23", "GPIO_1[25] AD20", "GPIO_1[22] AD19"
-    input   wire    [ 2 : 0 ]       ENC_N,      // {!A,!B,!Z}
+    input   wire    [ 2 : 0 ]       ENC_N,      // {X,!A,!B}
 
 
     inout   wire                    HPS_CONV_USB_N,
@@ -248,9 +248,21 @@ assign w_pixels_afull= w_wr_afull;
 
 ibuf_lvds   ibuf_lvds_encoder
 (
-    .datain     ( ENC_P     ),
-    .datain_b   ( ENC_N     ),
-    .dataout    ( w_encoder )
+    .datain                 ( ENC_P             ),
+    .datain_b               ( ENC_N             ),
+    .dataout                ( w_encoder         )
+);
+
+encoder_controller encoder_controller
+(
+    .CLK                    ( w_clk_1           ),
+    .RST                    ( w_adc_rst         ),
+            
+    .SIG_A                  ( w_encoder[1]      ),
+    .SIG_B                  ( w_encoder[0]      ),
+            
+    .TMP                    ( w_enc_tmp         ),
+    .PULSE                  ( w_encoder_pulse   )
 );
 
 always @(posedge w_clk_1)
@@ -539,6 +551,6 @@ assign LED[3] = 1'b0;
 assign LED[2] = 1'b0;
 assign LED[1] = 1'b0;
 
-assign LED[0] = {7'd0, ^r_encoder | w_si_toggle | ^w_lrgb | ^w_si_cnt | ^w_adc_data} | {7'd0,w_global_dbg};
+assign LED[0] = {7'd0, w_enc_tmp | ^r_encoder | w_si_toggle | ^w_lrgb | ^w_si_cnt | ^w_adc_data} | {7'd0,w_global_dbg};
 
 endmodule
