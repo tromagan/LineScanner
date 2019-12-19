@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 //`default_nettype none
 
-//`define SIM
+`define SIM
 
 module top
 (
@@ -90,7 +90,7 @@ wire    [ 11 : 0 ]      w_adc_data;
 
 wire    [  1 : 0 ]      w_cis_mode;
 wire    [ 23 : 0 ]      w_cis_lines_delay;
-wire                    w_encoder_event;
+wire    [ 15 : 0 ]      w_cis_lcnt_encoder;
 
 wire    [  2 : 0 ]      w_lrgb;
 wire                    w_si;
@@ -117,7 +117,6 @@ wire    [ 31 : 0 ]      w_r_clk_on_off, w_g_clk_on_off, w_b_clk_on_off;
 wire                    w_dma_cmd_fifo_empty, w_dma_cmd_fifo_aempty;
 wire    [ 15 : 0 ]      w_dma_done_cnt;
 wire    [ 31 : 0 ]      w_timer;
-
 
 wire    [127 : 0 ]      sdram0_writedata;
 wire    [ 27 : 0 ]      sdram0_address;
@@ -157,10 +156,10 @@ reg     [  9 : 0 ]      r_fifo_rd_cnt = 10'd0;
 
 genvar                  g;
 
-wire    w_global_dbg;
+wire                    w_global_dbg;
 
 wire    [  2 : 0 ]      w_encoder;
-reg     [  2 : 0 ]      r_encoder;
+wire                    w_encoder_pulse;
 
 reg_sync
 #(
@@ -174,6 +173,26 @@ reg_sync_cis_rst
 );
 
 
+ibuf_lvds   ibuf_lvds_encoder
+(
+    .datain                 ( ENC_P             ),
+    .datain_b               ( ENC_N             ),
+    .dataout                ( w_encoder         )
+);
+
+encoder_controller encoder_controller
+(
+    .CLK                    ( w_clk_0           ),
+    .RST                    ( w_sensor_rst      ),
+            
+    .SIG_A                  ( w_encoder[1]      ),
+    .SIG_B                  ( w_encoder[0]      ),
+            
+    .TMP                    ( w_enc_tmp         ),
+    .PULSE                  ( w_encoder_pulse   )
+);
+
+
 cis_controller cis_controller
 (
     .CLK                    ( w_clk_0           ),
@@ -181,7 +200,8 @@ cis_controller cis_controller
 
     .MODE                   ( w_cis_mode        ),
     .RGB_LINES_DELAY        ( w_cis_lines_delay ),
-    .EXTERNAL_START         ( w_encoder_event   ),
+    .EXTERNAL_START         ( w_encoder_pulse   ),
+    .EXTERNAL_START_LCNT    ( w_cis_lcnt_encoder),
 
     .R_ON_CNT               ( w_r_clk_on_off    ),               
     .G_ON_CNT               ( w_g_clk_on_off    ),
@@ -246,29 +266,7 @@ assign w_pixels_afull= w_wr_afull;
 
 
 
-ibuf_lvds   ibuf_lvds_encoder
-(
-    .datain                 ( ENC_P             ),
-    .datain_b               ( ENC_N             ),
-    .dataout                ( w_encoder         )
-);
 
-encoder_controller encoder_controller
-(
-    .CLK                    ( w_clk_1           ),
-    .RST                    ( w_adc_rst         ),
-            
-    .SIG_A                  ( w_encoder[1]      ),
-    .SIG_B                  ( w_encoder[0]      ),
-            
-    .TMP                    ( w_enc_tmp         ),
-    .PULSE                  ( w_encoder_pulse   )
-);
-
-always @(posedge w_clk_1)
-begin
-    r_encoder <= w_encoder;
-end
 
 
 `ifndef SIM
@@ -379,6 +377,7 @@ soc u0
 	.led_clk_on_green_export                   ( w_g_clk_on_off        ),                     //                     g_led_on_off.readdata
 	.led_clk_on_blue_export                    ( w_b_clk_on_off        ),                     //                     b_led_on_off.readdata
     .lines_delay_export                        ( w_cis_lines_delay     ),
+    .lines_cnt_encoder_export                  ( w_cis_lcnt_encoder    ),
 	.timer_cnt_export                          ( w_timer               ),                        //                        timer_reg.readdata
 
     .ctrl_reg_out_port                          ( w_ctrl_reg           ),          //out
@@ -551,6 +550,6 @@ assign LED[3] = 1'b0;
 assign LED[2] = 1'b0;
 assign LED[1] = 1'b0;
 
-assign LED[0] = {7'd0, w_enc_tmp | ^r_encoder | w_si_toggle | ^w_lrgb | ^w_si_cnt | ^w_adc_data} | {7'd0,w_global_dbg};
+assign LED[0] = {7'd0, w_enc_tmp | w_si_toggle | ^w_lrgb | ^w_si_cnt | ^w_adc_data} | {7'd0,w_global_dbg};
 
 endmodule

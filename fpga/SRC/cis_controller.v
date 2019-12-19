@@ -8,6 +8,7 @@ module cis_controller
     input   wire    [ 1 : 0 ]   MODE,
     input   wire    [23 : 0 ]   RGB_LINES_DELAY,
     input   wire                EXTERNAL_START,
+    input   wire    [15 : 0 ]   EXTERNAL_START_LCNT,
 
     input   wire    [31 : 0 ]   R_ON_CNT,
     input   wire    [31 : 0 ]   G_ON_CNT,
@@ -24,7 +25,6 @@ localparam      CNT_WIDTH               = 24;
 localparam      LINE_TIME_MIN           = 24'd2688;         //336 us (336/0.125)
 localparam      LEDS_CNT                = 24'd2592;         //led sensors count
 localparam      CNT_STATE_LEDS_ON       = 24'd60;
-localparam      LINES_CNT_PER_EXT_START = 16'd2;
 
 reg     [ 23 : 0 ]      r_rgb_lines_delay_cnt = 0;  //counter for delay between RGB lines:   R,G,B -----delay----- R,G,B -----delay----- ...
 
@@ -34,7 +34,7 @@ reg                     r_lrgb_start = 1'b0, r_lrgb_end = 1'b0;
 
 reg                     r_ext_start = 1'b0, r_ext_start_rise = 1'b0;
 reg                     r_ext_start_in_progress = 1'b0;
-reg     [ 15 : 0 ]      r_ext_start_lines_cnt = 16'd0;
+reg     [ 15 : 0 ]      r_external_start_lines_cnt = 16'd0, r_ext_start_lines_cnt = 16'd0;
 
 reg                     r_si = 1'b0;
 reg                     r_si_toggle_en = 1'b0,r_si_toggle = 1'b0;
@@ -51,6 +51,11 @@ begin
         r_rgb_lines_delay_cnt <= LINE_TIME_MIN;
     else
         r_rgb_lines_delay_cnt <= RGB_LINES_DELAY;
+
+    if(EXTERNAL_START_LCNT == 0)
+        r_external_start_lines_cnt <= 16'd1;
+    else
+        r_external_start_lines_cnt <= EXTERNAL_START_LCNT;
 
     r_mode <= MODE;
 
@@ -90,7 +95,7 @@ begin
                 begin
                     r_ext_start_in_progress <= 1'b1;
                 end
-                    if( ((r_rgb_line_done == 1'b1) && (r_clk_cnt == (LINE_TIME_MIN-1 + LINE_TIME_MIN-1))) && (r_ext_start_lines_cnt == LINES_CNT_PER_EXT_START) )
+                    if( ((r_rgb_line_done == 1'b1) && (r_clk_cnt == (LINE_TIME_MIN-1 + LINE_TIME_MIN-1))) && (r_ext_start_lines_cnt == r_external_start_lines_cnt) )
                         r_ext_start_in_progress <= 1'b0;
 
                 if(r_ext_start_in_progress == 1'b1)
