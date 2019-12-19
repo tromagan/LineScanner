@@ -41,8 +41,6 @@ wire    [ 15 : 0 ]  w_duty_high_cnt, w_duty_low_cnt;
 reg                 r_start = 1'b0, r_en = 1'b0;
 wire                w_en;
 
-//reg     [ 23 : 0 ]  r_clk_cnt = 24'd0;
-
 reg                 r_cnt_sel = 1'b0;
 reg     [ 15 : 0 ]  r_cnt_high, r_cnt_low;
 reg     [  2 : 0 ]  r_lrgb_iob;
@@ -118,32 +116,6 @@ begin
         end
     end
 end
-
-// always @(posedge CLK)
-// if(RST == 1'b1)
-// begin
-//     r_lrgb_iob <= 3'b111;
-//     r_clk_cnt  <= 24'd1;
-// end
-// else
-// begin
-//     if((START & ~r_start) == 1'b1)
-//         r_clk_cnt  <= 24'd1;
-//     else
-//         r_clk_cnt <= r_clk_cnt + 1'b1;
-
-//     if(w_en == 1'b1)
-//     begin
-//         if(r_clk_cnt <= r_duty_cycl_mux)
-//             r_lrgb_iob <= ~RGB;
-//         else
-//             r_lrgb_iob <= 3'b111;;
-//     end
-//     else
-//         r_lrgb_iob <= 3'b111;
-// end
-
-
 
 assign LRGB = r_lrgb_iob;
 
