@@ -87,6 +87,7 @@
 		.sdram0_byteenable               (<connected-to-sdram0_byteenable>),               //                     .byteenable
 		.sdram0_write                    (<connected-to-sdram0_write>),                    //                     .write
 		.status_reg_export               (<connected-to-status_reg_export>),               //           status_reg.export
-		.timer_cnt_export                (<connected-to-timer_cnt_export>)                 //            timer_cnt.export
+		.timer_cnt_export                (<connected-to-timer_cnt_export>),                //            timer_cnt.export
+		.lines_cnt_encoder_export        (<connected-to-lines_cnt_encoder_export>)         //    lines_cnt_encoder.export
 	);
 

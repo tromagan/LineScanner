@@ -88,7 +88,8 @@ module soc (
 	sdram0_byteenable,
 	sdram0_write,
 	status_reg_export,
-	timer_cnt_export);	
+	timer_cnt_export,
+	lines_cnt_encoder_export);	
 
 	output		bus_clk_clk;
 	input	[31:0]	ctrl_reg_in_port;
@@ -179,4 +180,5 @@ module soc (
 	input		sdram0_write;
 	input	[31:0]	status_reg_export;
 	input	[31:0]	timer_cnt_export;
+	output	[31:0]	lines_cnt_encoder_export;
 endmodule

@@ -88,7 +88,8 @@
 			sdram0_byteenable               : in    std_logic_vector(15 downto 0)  := (others => 'X'); -- byteenable
 			sdram0_write                    : in    std_logic                      := 'X';             -- write
 			status_reg_export               : in    std_logic_vector(31 downto 0)  := (others => 'X'); -- export
-			timer_cnt_export                : in    std_logic_vector(31 downto 0)  := (others => 'X')  -- export
+			timer_cnt_export                : in    std_logic_vector(31 downto 0)  := (others => 'X'); -- export
+			lines_cnt_encoder_export        : out   std_logic_vector(31 downto 0)                      -- export
 		);
 	end component soc;
 
@@ -182,6 +183,7 @@
 			sdram0_byteenable               => CONNECTED_TO_sdram0_byteenable,               --                     .byteenable
 			sdram0_write                    => CONNECTED_TO_sdram0_write,                    --                     .write
 			status_reg_export               => CONNECTED_TO_status_reg_export,               --           status_reg.export
-			timer_cnt_export                => CONNECTED_TO_timer_cnt_export                 --            timer_cnt.export
+			timer_cnt_export                => CONNECTED_TO_timer_cnt_export,                --            timer_cnt.export
+			lines_cnt_encoder_export        => CONNECTED_TO_lines_cnt_encoder_export         --    lines_cnt_encoder.export
 		);
 

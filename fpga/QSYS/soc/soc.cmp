@@ -59,6 +59,7 @@
 			led_clk_on_blue_export          : out   std_logic_vector(31 downto 0);                     -- export
 			led_clk_on_green_export         : out   std_logic_vector(31 downto 0);                     -- export
 			led_clk_on_red_export           : out   std_logic_vector(31 downto 0);                     -- export
+			lines_cnt_encoder_export        : out   std_logic_vector(31 downto 0);                     -- export
 			lines_delay_export              : out   std_logic_vector(31 downto 0);                     -- export
 			memory_mem_a                    : out   std_logic_vector(14 downto 0);                     -- mem_a
 			memory_mem_ba                   : out   std_logic_vector(2 downto 0);                      -- mem_ba
