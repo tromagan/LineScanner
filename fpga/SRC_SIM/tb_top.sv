@@ -17,25 +17,17 @@ wire                    w_si;
 reg     [ 11 : 0 ]      r_adc_data;
 wire    [ 11 : 0 ]      w_adc_data;
 
-reg                     r_encoder_event = 1'b0;
-
 wire                    w_sys_clk   = top.w_clk_1;
 wire    [ 31 : 0 ]      w_pixels    = top.w_pixels;
 wire                    w_pixels_dv = top.w_pixels_dv;
-wire                    w_pixels_full;
 
-wire    [ 12 : 0 ]      wr_data_count;
-wire                    wr_rst_busy;
+wire    [ 11 : 0 ]      wr_data_count [ 2 : 0 ];
 
 
-wire                    w_fifo_rd_en;
-wire    [ 127 : 0 ]     w_fifo_data;
-wire                    w_fifo_empty;
-wire    [  10 : 0 ]     rd_data_count;
-wire                    rd_rst_busy;
 
-wire                    w_fifo_dv;
-
+wire    [127 : 0 ]      w_dma_data          [ 2 : 0 ];
+wire    [ 27 : 0 ]      w_dma_adr           [ 2 : 0 ];
+wire    [  2 : 0 ]      w_dma_wr, w_dma_waitreq;
 
 
 wire    [ 27 : 0 ]      sdram0_address;
@@ -58,9 +50,10 @@ reg                     enable_sensor = 1'b0;
 reg     [ 28 : 0 ]      mode_n_indexs;
 reg     [ 27 : 0 ]      dma_start_address;
 reg     [ 27 : 0 ]      dma_buf_size;
-reg                     mode_cyclic;
 
-wire    [ 15 : 0 ]      w_dma_done_cnt;
+wire    [ 15 : 0 ]      w_dma_done_cnt[ 2 : 0 ];
+
+reg     [  2 : 0 ]      r_encoder = 3'd0;
 
 
 
@@ -94,7 +87,7 @@ assign top.w_bus_clk = CLK_80;
 assign top.w_clk_0 = clk_0;
 assign top.w_clk_1 = clk_1;
 assign top.w_linux_reset = linux_reset;
-assign top.w_encoder_event = r_encoder_event;
+
 
 initial
 begin
@@ -109,6 +102,7 @@ begin
     //force top.w_cis_lines_delay = 24'd222;
     force top.w_cis_mode = 2'd0;
     force top.w_cis_lines_delay = 24'd10000;
+    force top.w_cis_lcnt_encoder = 16'd3;
 
     force top.w_sensor_reset = 1'b1;
 
@@ -146,14 +140,15 @@ end
 top top
 (
     .FPGA_CLK1_50   ( CLK_50        ),
-    .FPGA_CLK2_50   ( CLK_50        ),
-    
     .CLKC           ( CLK           ),
     .DC             ( w_adc_data    ),
 
     .LRGB           (               ),
     .SIC            ( w_si          ),
     .SCLKC          (               ),
+
+    .ENC_P          ( r_encoder     ),
+    .ENC_N          ( ~r_encoder    ),
 
     .SW             ( 4'b0011       ),
     //.SW             ( 4'b0001       ),
@@ -164,66 +159,88 @@ top top
 //assign wr_data_count = 13'd0;
 
 
-
+reg enc_inv = 1'b0;
 initial
 begin
     forever
     begin
-        repeat(10000)    @(posedge clk_1);
-        //repeat(1000)    @(posedge clk_1);
-        r_encoder_event <= ~r_encoder_event;
+        repeat(5000) @(posedge clk_1);
+
+        if(enc_inv == 1'b1)
+            r_encoder[1] = ~r_encoder[1];
+        else
+            r_encoder[0] = ~r_encoder[0];
+
+        enc_inv = ~enc_inv;
     end
 end
 
-/*
+
+
+
+
+
+
+
+
+
 CUniversalRand          v1;
 //assign top.w_wr_afull = (wr_data_count >= 13'd4080) ? 1'b1 : 1'b0;
-assign top.w_wr_afull = (wr_data_count >= 13'd1080) ? 1'b1 : 1'b0;
+assign top.w_wr_afull = (wr_data_count[0] >= 1080) ? 1'b1 : 1'b0;
 
-fifo_generator_0 fifo_generator_0 
-(
-    .rst            ( r_startup_rst         ),                      // input wire rst
-    .wr_clk         ( w_sys_clk             ),                // input wire wr_clk
-    .din            ( w_pixels              ),                      // input wire [31 : 0] din
-    .wr_en          ( w_pixels_dv           ),                  // input wire wr_en
-    .full           ( w_pixels_full         ),                    // output wire full
-    .wr_data_count  ( wr_data_count         ),  // output wire [12 : 0] wr_data_count
-    .wr_rst_busy    ( wr_rst_busy           ),      // output wire wr_rst_busy
+genvar g;
 
-    .rd_clk         ( CLK_80                ),                // input wire rd_clk
-    .rd_en          ( w_fifo_rd_en          ),                  // input wire rd_en
-    .dout           ( w_fifo_data           ),                    // output wire [127 : 0] dout
-    .empty          ( w_fifo_empty          ),                  // output wire empty
-    .rd_data_count  ( rd_data_count         ),  // output wire [10 : 0] rd_data_count
-    .rd_rst_busy    ( rd_rst_busy           )      // output wire rd_rst_busy
-);
+for (g = 0; g < 3; g = g + 1)
+begin: gloop_dma
+    dma_fifo_wrapper dma_fifo_wrapper
+    (
+        .FIFO_CLK                       ( w_sys_clk         ),     // in   , u[1],
+        .FIFO_DIN                       ( w_pixels          ),     // in   , u[32],
+        .FIFO_DIN_DV                    ( w_pixels_dv       ),     // in   , u[1],
+        .WR_CNT                         ( wr_data_count [g] ),     // out  , u[12],
+            
+        .DMA_CLK                        ( CLK_80            ),     // in   , u[1],
+        .SRST                           ( r_startup_rst     ),     // in   , u[1],
+        .START_ADR                      ( dma_start_address ),     // in   , u[28],
+        .BUF_SIZE                       ( dma_buf_size      ),     // in   , u[28],
+        .START                          ( dma_on            ),     // in   , u[1],
+        .DONE_CNT                       ( w_dma_done_cnt[g] ),     // out  , u[16],
+        .CMD_FIFO_EMPTY                 (                   ),     // out  , u[1],
+        .CMD_FIFO_AEMPTY                (                   ),     // out  , u[1],
+            
+        .SDRAM_WRITEDATA                ( w_dma_data    [g] ),     // out  , u[128],
+        .SDRAM_ADDRESS                  ( w_dma_adr     [g] ),     // out  , u[28],
+        .SDRAM_WRITE                    ( w_dma_wr      [g] ),     // out  , u[1],
+        .SDRAM_WAITREQUEST              ( w_dma_waitreq [g] )      // in   , u[1],
+    );
+end
 
 
-
-
-
-
-
-simple_dma dma_ctrl
+dma_mux dma_mux
 (
     .CLK                            ( CLK_80                    ),     // in   , u[1],
-    .SRST                           ( linux_reset               ),     // in   , u[1],
+    .RST                            ( linux_reset               ),     // in   , u[1],
     
-    .START_ADR                      ( dma_start_address         ),     // in   , u[28],
-    .BUF_SIZE                       ( dma_buf_size              ),     // in   , u[28],
-    .START                          ( dma_on                    ),     // in   , u[1],
-    .DONE_CNT                       ( w_dma_done_cnt            ),     // out  , u[16],
-    
-    .FIFO_DATA                      ( w_fifo_data               ),     // in   , u[128],
-    .FIFO_EMPTY                     ( w_fifo_empty              ),     // in   , u[1],
-    .FIFO_TREADY                    ( w_fifo_rd_en              ),     // out  , u[1],
-    .FIFO_DATA_CNT                  ( rd_data_count             ),  
+    .DMA_0_DATA                     ( w_dma_data    [0]         ),     // in   , u[128],
+    //.DMA_0_ADR                      ( w_dma_adr     [0]         ),     // in   , u[28],
+    .DMA_0_ADR                       ( 28'd0         ),     // in   , u[1],
+    .DMA_0_WR                       ( w_dma_wr      [0]         ),     // in   , u[1],
+    .DMA_0_WAITREQ                  ( w_dma_waitreq [0]         ),     // out  , u[1],
+    .DMA_1_DATA                     ( w_dma_data    [1]         ),     // in   , u[128],
+    .DMA_1_ADR                      ( w_dma_adr     [1] + 28'd1000        ),     // in   , u[28],
+    .DMA_1_WR                       ( w_dma_wr      [1]         ),     // in   , u[1],
+    .DMA_1_WAITREQ                  ( w_dma_waitreq [1]         ),     // out  , u[1],
+    .DMA_2_DATA                     ( w_dma_data    [2]         ),     // in   , u[128],
+    .DMA_2_ADR                      ( w_dma_adr     [2] + 28'd1000        ),     // in   , u[28],
+    .DMA_2_WR                       ( w_dma_wr      [2]         ),     // in   , u[1],
+    .DMA_2_WAITREQ                  ( w_dma_waitreq [2]         ),     // out  , u[1],
     
     .SDRAM_WRITEDATA                ( sdram0_writedata          ),     // out  , u[128],
     .SDRAM_ADDRESS                  ( sdram0_address            ),     // out  , u[28],
     .SDRAM_WRITE                    ( sdram0_write              ),     // out  , u[1],
     .SDRAM_WAITREQUEST              ( sdram0_waitrequest        )      // in   , u[1],
 );
+
 
 assign sdram0_waitrequest = r_sdram0_waitrequest;
 
@@ -240,13 +257,12 @@ assign sdram_data_swapped[127 : 96 ] = {sdram0_writedata[111: 96],sdram0_writeda
 initial
 begin
 
-    repeat(10) @(posedge CLK_80);
-    linux_reset <= 1'b1;
-    repeat(20) @(posedge CLK_80);
-    linux_reset <= 1'b0;
+    // repeat(10) @(posedge CLK_80);
+    // linux_reset <= 1'b1;
+    // repeat(20) @(posedge CLK_80);
+    // linux_reset <= 1'b0;
 
-    repeat(20) @(posedge CLK_80);
-    mode_cyclic     <= 1'b0;
+    repeat(500) @(posedge CLK_80);
     enable_sensor   <= 1'b1;
 
 
@@ -271,7 +287,8 @@ end
 
 
 always @(posedge CLK_80)
-if(sdram0_write & ~sdram0_waitrequest)
+//if(sdram0_write & ~sdram0_waitrequest)
+if(sdram0_write & ~sdram0_waitrequest & sdram0_address == 0)
     check_cnt16(65535);
     //check_cnt32();
 
@@ -281,8 +298,9 @@ if(sdram0_write & ~sdram0_waitrequest)
 
 initial
 begin
-    //v1 = new(10,200);
+    
     v1 = new(10,150);
+    //v1 = new(0,0);
 
     @(posedge dma_on);
 
@@ -291,7 +309,7 @@ begin
         @(posedge sdram0_write);
         @(posedge CLK_80);
 
-        r_sdram0_waitrequest = 1'b1;
+        //r_sdram0_waitrequest = 1'b1;
         v1.randomize();
         repeat(v1.randval) @(posedge  CLK_80);
 
@@ -358,7 +376,7 @@ begin
         written_cmds++;
     end
 
-    buffers_cnt = w_dma_done_cnt;
+    buffers_cnt = w_dma_done_cnt[0];
 
 
 
@@ -368,7 +386,7 @@ begin
     if(released_buffers_cnt)
     begin
 
-        if(buffers_cnt % 128 == 0)
+        if(buffers_cnt % 8 == 0)
             $display("done %d buffers\n", buffers_cnt);
 
         //printf("released_buffers_cnt=%d\n", released_buffers_cnt);
@@ -391,12 +409,12 @@ begin
     //#1000;
     //$display("end wait %t",$time());
   end
-  $display("done %d buffers\n", w_dma_done_cnt);
+  $display("done %d buffers\n", w_dma_done_cnt[0]);
 end
 endtask
 
 
-
+/*
 task automatic check_cnt32();
 static int ref_cnt = 0;
 begin
@@ -420,7 +438,7 @@ begin
     end
 end
 endtask
-
+*/
 
 task automatic check_cnt16(input int max);
 static int ref_cnt = 0;
@@ -446,6 +464,6 @@ begin
     end
 end
 endtask
-*/
+
 
 endmodule    

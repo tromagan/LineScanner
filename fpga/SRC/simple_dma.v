@@ -93,6 +93,9 @@ reg     [ 15 : 0 ]  r_done_cnt;
 reg     [127 : 0 ]  r_sdram_wr_data;
 reg     [ 27 : 0 ]  r_sdram_wr_adr;
 reg                 r_sdram_wr;
+wire                w_sdram_wr;
+
+wire                w_sdram_transact;
 
 
 assign w_fifo_cmd_wr = START & ~r_start;
@@ -159,7 +162,7 @@ begin
     begin
         r_fifo_cmd_rd <= 1'b0; 
         
-        if((r_words_cnt == 28'd0) && (r_sdram_wr == 1'b1))
+        if((r_words_cnt == 28'd1) && (w_sdram_transact == 1'b1))
         begin
             r_transact_active <= 1'b0;
             r_done_cnt <= r_done_cnt + 1'b1;
@@ -169,43 +172,51 @@ begin
 
 end
 
-    
+
+assign w_sdram_wr = r_sdram_wr & ~FIFO_EMPTY;
+assign w_sdram_transact = w_sdram_wr & ~SDRAM_WAITREQUEST;    
 
 always @(posedge CLK)
-if(r_buf_params_dv == 1'b1)
+if(SRST == 1'b1)
 begin
-    r_words_cnt     <= r_buf_size;    
-    r_sdram_wr_adr  <= r_buf_adr;
-    r_tready   <= 1'b0;
-    r_sdram_wr <= 1'b0;
+    r_words_cnt <= 28'd0;
+    r_tready    <= 1'b0;
+    r_sdram_wr  <= 1'b0;
 end
 else
-begin
-    if((|r_words_cnt == 1'b1) && (SDRAM_WAITREQUEST == 1'b0) && (FIFO_EMPTY == 1'b0) && (r_sdram_wr == 1'b0))
+    if(r_buf_params_dv == 1'b1)
     begin
-        r_words_cnt <= r_words_cnt - 1'b1;
-        r_sdram_wr  <= 1'b1;
-        r_tready    <= 1'b1;
-        
+        r_words_cnt     <= r_buf_size;    
+        r_sdram_wr_adr  <= r_buf_adr;
+        r_tready        <= 1'b0;
+        r_sdram_wr      <= 1'b0;
     end
     else
     begin
-        r_tready   <= 1'b0;
-        r_sdram_wr <= 1'b0;
+        if((|r_words_cnt == 1'b1) && (FIFO_EMPTY == 1'b0))
+            r_sdram_wr <= 1'b1;
+        else
+            r_sdram_wr <= 1'b0;
+
+        //r_tready    <= w_sdram_transact;
+
+        if(w_sdram_transact == 1'b1)
+        begin
+            r_words_cnt <= r_words_cnt - 1'b1;
+            r_sdram_wr_adr <= r_sdram_wr_adr + 1'b1;
+        end
+
+        //r_sdram_wr_data <= FIFO_DATA;
     end
 
-    if(r_sdram_wr == 1'b1)
-        r_sdram_wr_adr <= r_sdram_wr_adr + 1'b1;
 
-    r_sdram_wr_data <= FIFO_DATA;
-end
-
-
-assign FIFO_TREADY      = r_tready;
+//assign FIFO_TREADY      = r_tready;
+assign FIFO_TREADY      = w_sdram_transact;
 
 assign DONE_CNT         = r_done_cnt;
 
-assign SDRAM_WRITEDATA  = r_sdram_wr_data;
+//assign SDRAM_WRITEDATA  = r_sdram_wr_data;
+assign SDRAM_WRITEDATA  = FIFO_DATA;
 assign SDRAM_ADDRESS    = r_sdram_wr_adr;
-assign SDRAM_WRITE      = r_sdram_wr;
+assign SDRAM_WRITE      = w_sdram_wr;
 endmodule
