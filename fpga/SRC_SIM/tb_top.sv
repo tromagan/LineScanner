@@ -192,7 +192,11 @@ genvar g;
 
 for (g = 0; g < 3; g = g + 1)
 begin: gloop_dma
-    dma_fifo_wrapper dma_fifo_wrapper
+    dma_fifo_wrapper
+    #(
+        .SIM                            ( 1                 )
+    )
+    dma_fifo_wrapper
     (
         .FIFO_CLK                       ( w_sys_clk         ),     // in   , u[1],
         .FIFO_DIN                       ( w_pixels          ),     // in   , u[32],

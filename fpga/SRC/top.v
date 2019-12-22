@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 //`default_nettype none
 
-`define SIM
+//`define SIM
 
 module top
 (
@@ -141,12 +141,12 @@ wire    [ 31 : 0 ]      w_fifo_din;
 wire                    w_fifo_din_dv;
 wire    [ 11 : 0 ]      w_wr_cnt;
 wire                    w_wr_afull;
-wire                    w_wr_full;
+//wire                    w_wr_full;
     
     
-wire    [127 : 0 ]      w_fifo_data;
-wire                    w_fifo_empty, w_fifo_rd_ack;
-wire    [  9 : 0 ]      w_rd_cnt;
+//wire    [127 : 0 ]      w_fifo_data;
+//wire                    w_fifo_empty, w_fifo_rd_ack;
+//wire    [  9 : 0 ]      w_rd_cnt;
 reg     [  9 : 0 ]      r_fifo_rd_cnt = 10'd0;
 (*preserve*) reg                     r_fifo_ovr;
 
@@ -416,7 +416,7 @@ timer
 
 
 assign w_wr_afull = (w_wr_cnt >= 4080) ? 1'b1 : 1'b0;
-
+/*
 fifo_t4 fifo
 (
     .aclr                           ( w_linux_reset ),
@@ -464,6 +464,29 @@ simple_dma dma_ctrl
     .SDRAM_WRITE                    ( sdram0_write              ),     // out  , u[1],
     .SDRAM_WAITREQUEST              ( sdram0_waitrequest        )      // in   , u[1],
 );
+*/
+
+dma_fifo_wrapper dma_fifo_wrapper
+(
+    .FIFO_CLK                       ( w_clk_1                   ),     // in   , u[1],
+    .FIFO_DIN                       ( w_fifo_din                ),     // in   , u[32],
+    .FIFO_DIN_DV                    ( w_fifo_din_dv             ),     // in   , u[1],
+    .WR_CNT                         ( w_wr_cnt                  ),     // out  , u[12],
+        
+    .DMA_CLK                        ( w_bus_clk                 ),     // in   , u[1],
+    .SRST                           ( w_linux_reset             ),     // in   , u[1],
+    .START_ADR                      ( w_dma_start_address       ),     // in   , u[28],
+    .BUF_SIZE                       ( w_dma_buf_size            ),     // in   , u[28],
+    .START                          ( w_dma_on                  ),     // in   , u[1],
+    .DONE_CNT                       ( w_dma_done_cnt            ),     // out  , u[16],
+    .CMD_FIFO_EMPTY                 ( w_dma_cmd_fifo_empty      ),     // out  , u[1],
+    .CMD_FIFO_AEMPTY                ( w_dma_cmd_fifo_aempty     ),     // out  , u[1],
+        
+    .SDRAM_WRITEDATA                ( sdram0_writedata          ),     // out  , u[128],
+    .SDRAM_ADDRESS                  ( sdram0_address            ),     // out  , u[28],
+    .SDRAM_WRITE                    ( sdram0_write              ),     // out  , u[1],
+    .SDRAM_WAITREQUEST              ( sdram0_waitrequest        )      // in   , u[1],
+);
 
 
 
@@ -472,9 +495,9 @@ assign sdram0_burstcount = 8'd1;
 
 always @(posedge w_bus_clk)
 begin
-    r_dbg_fifo_data          <= w_fifo_data;
-    r_dbg_read_req           <= w_fifo_rd_ack;
-    r_dbg_read_empty         <= w_fifo_empty;
+    //r_dbg_fifo_data          <= w_fifo_data;
+    //r_dbg_read_req           <= w_fifo_rd_ack;
+    //r_dbg_read_empty         <= w_fifo_empty;
 
     r_dbg_sdram0_writedata   <= sdram0_writedata;  
     r_dbg_sdram0_address     <= sdram0_address;    

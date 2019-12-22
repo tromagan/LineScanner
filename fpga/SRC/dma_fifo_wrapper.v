@@ -21,6 +21,9 @@
 
 
 module dma_fifo_wrapper
+#(
+    parameter                       SIM = 0
+)
 (
     input   wire                    FIFO_CLK,
     input   wire    [ 31 : 0 ]      FIFO_DIN,
@@ -47,23 +50,49 @@ wire    [ 127 : 0 ]     w_fifo_data;
 wire                    w_fifo_empty;
 wire    [  10 : 0 ]     rd_data_count;
 
-fifo_generator_0 fifo_generator_0 
-(
-    .rst                            ( SRST                  ),                      // input wire rst
-    .wr_clk                         ( FIFO_CLK              ),                // input wire wr_clk
-    .din                            ( FIFO_DIN              ),                      // input wire [31 : 0] din
-    .wr_en                          ( FIFO_DIN_DV           ),                  // input wire wr_en
-    .full                           (                       ),                    // output wire full
-    .wr_data_count                  ( WR_CNT                ),  // output wire [12 : 0] wr_data_count
-    .wr_rst_busy                    (                       ),      // output wire wr_rst_busy
-                
-    .rd_clk                         ( DMA_CLK               ),                // input wire rd_clk
-    .rd_en                          ( w_fifo_rd_en          ),                  // input wire rd_en
-    .dout                           ( w_fifo_data           ),                    // output wire [127 : 0] dout
-    .empty                          ( w_fifo_empty          ),                  // output wire empty
-    .rd_data_count                  ( rd_data_count         ),  // output wire [10 : 0] rd_data_count
-    .rd_rst_busy                    (                       )      // output wire rd_rst_busy
-);
+generate 
+    if(SIM == 0)
+    begin : gloop_fifo_t4
+        fifo_t4 fifo
+        (
+            .aclr                           ( SRST ),
+
+            .wrclk                          ( FIFO_CLK      ),  
+            .data                           ( FIFO_DIN      ),
+            .wrreq                          ( FIFO_DIN_DV   ),  //as tvalid
+            .wrusedw                        ( WR_CNT        ),
+            .wrfull                         (               ), 
+
+            .rdclk                          ( DMA_CLK       ),
+            .q                              ( w_fifo_data   ),
+            .rdreq                          ( w_fifo_rd_en  ),  //as aknowledge (tready)
+            .rdusedw                        (               ),
+            .rdempty                        ( w_fifo_empty  )
+        );
+    end
+    else
+    begin: gloop_fifo_sim
+        fifo_generator_0 fifo_generator_0 
+        (
+            .rst                            ( SRST                  ),                      // input wire rst
+            .wr_clk                         ( FIFO_CLK              ),                // input wire wr_clk
+            .din                            ( FIFO_DIN              ),                      // input wire [31 : 0] din
+            .wr_en                          ( FIFO_DIN_DV           ),                  // input wire wr_en
+            .full                           (                       ),                    // output wire full
+            .wr_data_count                  ( WR_CNT                ),  // output wire [12 : 0] wr_data_count
+            .wr_rst_busy                    (                       ),      // output wire wr_rst_busy
+                        
+            .rd_clk                         ( DMA_CLK               ),                // input wire rd_clk
+            .rd_en                          ( w_fifo_rd_en          ),                  // input wire rd_en
+            .dout                           ( w_fifo_data           ),                    // output wire [127 : 0] dout
+            .empty                          ( w_fifo_empty          ),                  // output wire empty
+            .rd_data_count                  (                       ),  // output wire [10 : 0] rd_data_count
+            .rd_rst_busy                    (                       )      // output wire rd_rst_busy
+        );
+    end
+endgenerate
+
+
 
 
 simple_dma dma_ctrl
@@ -79,7 +108,7 @@ simple_dma dma_ctrl
     .FIFO_DATA                      ( w_fifo_data           ),     // in   , u[128],
     .FIFO_EMPTY                     ( w_fifo_empty          ),     // in   , u[1],
     .FIFO_TREADY                    ( w_fifo_rd_en          ),     // out  , u[1],
-    .FIFO_DATA_CNT                  ( rd_data_count         ),  
+    .FIFO_DATA_CNT                  (                       ),  
     
     .SDRAM_WRITEDATA                ( SDRAM_WRITEDATA       ),     // out  , u[128],
     .SDRAM_ADDRESS                  ( SDRAM_ADDRESS         ),     // out  , u[28],
