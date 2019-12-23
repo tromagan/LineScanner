@@ -119,6 +119,7 @@ uint16_t sdma_get_bufs_cnt()
     return GET_REG(BA_DMA_STATUS);
 }
 
+#define DMA_CNT 1
 
 void simple_dma_process(uint32_t adr)
 {
@@ -139,8 +140,8 @@ void simple_dma_process(uint32_t adr)
   uint32_t idx_in_dma_alloc = 0;
   uint32_t written_cmds = 0;
   
-  uint32_t test_buffers_cnt = 2;
-  //uint32_t test_buffers_cnt = 1000000;
+  //uint32_t test_buffers_cnt = 2;
+  uint32_t test_buffers_cnt = 1000000;
   
   while(buffers_cnt < test_buffers_cnt)
   {
@@ -160,7 +161,8 @@ void simple_dma_process(uint32_t adr)
       }
       else
       {
-        idx_in_dma_alloc++;
+        //idx_in_dma_alloc++;
+        idx_in_dma_alloc += DMA_CNT;      //beecose 3 DMA
       }
         written_cmds++;
     }
@@ -183,10 +185,13 @@ void simple_dma_process(uint32_t adr)
         //printf("read_idx = %X\n", read_idx);
 
 #ifdef NETWORK
-        socket_send(&dma_alloc[read_idx], (released_buffers_cnt*buf_size_words) << 2);
+        //socket_send(&dma_alloc[read_idx], (released_buffers_cnt*buf_size_words) << 2);
+        //socket_send(&dma_alloc[read_idx], ((released_buffers_cnt*buf_size_words) << 2)*DMA_CNT);
+        socket_send(&dma_alloc[read_idx], ((released_buffers_cnt*buf_size_words) << 2)*1);
 #endif
       //
-        read_idx += (released_buffers_cnt * buf_size_words);
+        //read_idx += (released_buffers_cnt * buf_size_words);
+        read_idx += (released_buffers_cnt * buf_size_words)*DMA_CNT;
         
         if(read_idx >= size_dma_alloc_words)
           read_idx -= size_dma_alloc_words;
@@ -236,6 +241,17 @@ void test_rgb()
 
 }
 
+void test_send_socket()
+{
+    uint32_t size = (linescan_bytes_size*1024) >> 2;
+    printf("start test_send_socket(), size(words) = %d\n", size);
+    while(1)
+    {
+        socket_send(&dma_alloc[0], size);
+        usleep(50);
+    }
+}
+
 int main( int argc, char *argv[] ) 
 {
   fd_dma = dminit();
@@ -277,6 +293,7 @@ int main( int argc, char *argv[] )
 
 #ifdef NETWORK
   socket_connect();
+  test_send_socket();
 #endif
 
 /////////////////////////////
