@@ -28,7 +28,7 @@ module dma_fifo_wrapper
     input   wire                    FIFO_CLK,
     input   wire    [ 31 : 0 ]      FIFO_DIN,
     input   wire                    FIFO_DIN_DV,
-    output  wire    [ 11 : 0 ]      WR_CNT,
+    output  wire                    AFULL,
 
     input   wire                    DMA_CLK,
     input   wire                    SRST,
@@ -48,7 +48,11 @@ module dma_fifo_wrapper
 wire                    w_fifo_rd_en;
 wire    [ 127 : 0 ]     w_fifo_data;
 wire                    w_fifo_empty;
-wire    [  10 : 0 ]     rd_data_count;
+
+wire    [ 11 : 0 ]      w_wr_cnt;
+
+
+assign AFULL = (w_wr_cnt >= 4080) ? 1'b1 : 1'b0;
 
 generate 
     if(SIM == 0)
@@ -60,7 +64,7 @@ generate
             .wrclk                          ( FIFO_CLK      ),  
             .data                           ( FIFO_DIN      ),
             .wrreq                          ( FIFO_DIN_DV   ),  //as tvalid
-            .wrusedw                        ( WR_CNT        ),
+            .wrusedw                        ( w_wr_cnt      ),
             .wrfull                         (               ), 
 
             .rdclk                          ( DMA_CLK       ),
@@ -79,7 +83,7 @@ generate
             .din                            ( FIFO_DIN              ),                      // input wire [31 : 0] din
             .wr_en                          ( FIFO_DIN_DV           ),                  // input wire wr_en
             .full                           (                       ),                    // output wire full
-            .wr_data_count                  ( WR_CNT                ),  // output wire [12 : 0] wr_data_count
+            .wr_data_count                  ( w_wr_cnt              ),  // output wire [12 : 0] wr_data_count
             .wr_rst_busy                    (                       ),      // output wire wr_rst_busy
                         
             .rd_clk                         ( DMA_CLK               ),                // input wire rd_clk
@@ -95,7 +99,7 @@ endgenerate
 
 
 
-simple_dma dma_ctrl
+simple_dma simple_dma
 (
     .CLK                            ( DMA_CLK               ),     // in   , u[1],
     .SRST                           ( SRST                  ),     // in   , u[1],
@@ -104,11 +108,12 @@ simple_dma dma_ctrl
     .BUF_SIZE                       ( BUF_SIZE              ),     // in   , u[28],
     .START                          ( START                 ),     // in   , u[1],
     .DONE_CNT                       ( DONE_CNT              ),     // out  , u[16],
+    .CMD_FIFO_EMPTY                 ( CMD_FIFO_EMPTY        ),     // out  , u[1],
+    .CMD_FIFO_AEMPTY                ( CMD_FIFO_AEMPTY       ),     // out  , u[1],
     
     .FIFO_DATA                      ( w_fifo_data           ),     // in   , u[128],
     .FIFO_EMPTY                     ( w_fifo_empty          ),     // in   , u[1],
     .FIFO_TREADY                    ( w_fifo_rd_en          ),     // out  , u[1],
-    .FIFO_DATA_CNT                  (                       ),  
     
     .SDRAM_WRITEDATA                ( SDRAM_WRITEDATA       ),     // out  , u[128],
     .SDRAM_ADDRESS                  ( SDRAM_ADDRESS         ),     // out  , u[28],

@@ -30,7 +30,9 @@ simple_dma simple_dma
     .START_ADR                  (   ),     // in   , u[28],
     .BUF_SIZE                   (   ),     // in   , u[28],
     .START                      (   ),     // in   , u[1],
-    .DONE                       (   ),     // out  , u[1],
+    .DONE_CNT                   (   ),     // out  , u[16],
+    .CMD_FIFO_EMPTY             (   ),     // out  , u[1],
+    .CMD_FIFO_AEMPTY            (   ),     // out  , u[1],
 
     .FIFO_DATA                  (   ),     // in   , u[128],
     .FIFO_EMPTY                 (   ),     // in   , u[1],
@@ -58,7 +60,6 @@ module simple_dma
 
     input   wire    [127 : 0 ]      FIFO_DATA,
     input   wire                    FIFO_EMPTY,
-    input   wire    [ 10 : 0 ]      FIFO_DATA_CNT,
     output  wire                    FIFO_TREADY,
 
 
