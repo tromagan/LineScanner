@@ -81,7 +81,7 @@ def load_pcm(fname):
     f = open(fname, "rb")
     fsize   = os.path.getsize(fname)
     if(fsize % line_scan_bytes_size):
-        print("*****error file size! not integer linescan bytes size!!!!!")
+        print("*****error file size! not integer linescan bytes size!!!!! %d" % fsize)
         sys.exit()
 
     raw_data = np.zeros((fsize >> 1,1), dtype = np.int16)

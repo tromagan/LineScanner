@@ -186,8 +186,8 @@ void simple_dma_process(uint32_t adr)
 
 #ifdef NETWORK
         //socket_send(&dma_alloc[read_idx], (released_buffers_cnt*buf_size_words) << 2);
-        //socket_send(&dma_alloc[read_idx], ((released_buffers_cnt*buf_size_words) << 2)*DMA_CNT);
-        socket_send(&dma_alloc[read_idx], ((released_buffers_cnt*buf_size_words) << 2)*1);
+        socket_send(&dma_alloc[read_idx], ((released_buffers_cnt*buf_size_words) << 2)*DMA_CNT);
+        //socket_send(&dma_alloc[read_idx], ((released_buffers_cnt*buf_size_words) << 2)*1);
 #endif
       //
         //read_idx += (released_buffers_cnt * buf_size_words);
@@ -204,6 +204,7 @@ void test_rgb()
 {
   uint32_t i;
 
+  CLR_RST();
   CLR_RST_CIS();
 
   while(1)
@@ -213,32 +214,32 @@ void test_rgb()
       switch(i)
       {
         case 0 : 
-            SET_LED_CLK_R(2592);
-            SET_LED_CLK_G(1);
-            SET_LED_CLK_B(1);
+            SET_LED_CLK_R((0 << 16) | 100);
+            SET_LED_CLK_G((10 << 16) | 0);
+            SET_LED_CLK_B((10 << 16) | 0);
             break;
 
         case 1 : 
-            SET_LED_CLK_R(1);
-            SET_LED_CLK_G(2592);
-            SET_LED_CLK_B(1);
+            SET_LED_CLK_R((10 << 16) | 0);
+            SET_LED_CLK_G((0 << 16) | 100);
+            SET_LED_CLK_B((10 << 16) | 0);
             break;
 
         case 2 : 
-            SET_LED_CLK_R(1);
-            SET_LED_CLK_G(1);
-            SET_LED_CLK_B(2592);
+            SET_LED_CLK_R((10 << 16) | 0);
+            SET_LED_CLK_G((10 << 16) | 0);
+            SET_LED_CLK_B((0 << 16) | 100);
             break;
 
-        default:  SET_LED_CLK_R(1);
-                  SET_LED_CLK_G(1);
-                  SET_LED_CLK_B(1);
+        default:  SET_LED_CLK_R((10 << 16) | 0);
+                  SET_LED_CLK_G((10 << 16) | 0);
+                  SET_LED_CLK_B((10 << 16) | 0);
                   break;
       }
       usleep(500*1000);
     }
   }
-
+  SET_RST_CIS();
 }
 
 void test_send_socket()
@@ -293,20 +294,22 @@ int main( int argc, char *argv[] )
 
 #ifdef NETWORK
   socket_connect();
-  test_send_socket();
+  //test_send_socket();
 #endif
 
 /////////////////////////////
 //  SET_LED_CLK_R(LED_OFF << 16 | LED_ON)
 /////////////////////////////
 
-  SET_LED_CLK_R((80 << 16) | 100);
-  SET_LED_CLK_G((60 << 16) | 100);
-  SET_LED_CLK_B((220 << 16) | 100);
+  // SET_LED_CLK_R((50 << 16) | 100);
+  // SET_LED_CLK_G((1 << 16) | 100);
+  // SET_LED_CLK_B((1 << 16) | 100);
 
-  // SET_LED_CLK_R((85 << 16) | 100);
-  // SET_LED_CLK_G((80 << 16) | 100);
-  // SET_LED_CLK_B((220<< 16) | 100);
+  
+  //full white
+  SET_LED_CLK_R((180 << 16) | 100);
+  SET_LED_CLK_G((110 << 16) | 100);
+  SET_LED_CLK_B((310 << 16) | 100);
 
   // SET_LED_CLK_R((40 << 16) | 0);
   // SET_LED_CLK_G((40 << 16) | 0);

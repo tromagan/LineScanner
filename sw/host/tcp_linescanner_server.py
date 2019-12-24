@@ -26,8 +26,8 @@ linescan_bytes_size = 2592*6
 
 buf_size = linescan_bytes_size*1024*dma_cnt
 #buf_size = 16384
-bufs_cnt = 10000000
-#bufs_cnt = 1
+#bufs_cnt = 10000000
+bufs_cnt = 1
 
 #while True:
 while data_len_total < buf_size*bufs_cnt:
@@ -38,7 +38,7 @@ while data_len_total < buf_size*bufs_cnt:
     #print(blocks_cnt)
     #print(data)
 
-    #fd.write(bytearray(data))
+    fd.write(bytearray(data))
 
 print('received %d MB' % (data_len_total/(1024*1024)))
 
