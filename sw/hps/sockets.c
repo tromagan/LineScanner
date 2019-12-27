@@ -12,6 +12,7 @@
 
 
 const char *s_addr = "192.168.0.215";   //server adr
+//const char *s_addr = "192.168.1.1";   //server adr
 const uint16_t  i_port = 2592;          //server port
 
 int s = -1;

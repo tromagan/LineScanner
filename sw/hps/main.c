@@ -119,16 +119,20 @@ uint16_t sdma_get_bufs_cnt()
     return GET_REG(BA_DMA_STATUS);
 }
 
-#define DMA_CNT 1
+//Set how many DMA channels works. For correct buffers addressing
+#define DMA_CNT 3
 
+//Select DMA channel (0-2) for transmitting to host
+#define DMA_SEL 0
+
+
+//request DMA some buffers cnt. And while DMAs ready transmit buffers to host.
 void simple_dma_process(uint32_t adr)
 {
   const uint32_t CMD_FIFO_SIZE = 8;
   //const uint32_t CMD_FIFO_SIZE = 1;
 
   const uint32_t buf_size_bytes = linescan_bytes_size*512;
-  //const uint32_t buf_size_bytes = linescan_bytes_size*100;
-  //const uint32_t buf_size_bytes = linescan_bytes_size*4;
 
   const uint32_t buf_size_words = buf_size_bytes >> 2; 
   const uint32_t buf_size_dma   = buf_size_bytes >> 4;
@@ -140,8 +144,8 @@ void simple_dma_process(uint32_t adr)
   uint32_t idx_in_dma_alloc = 0;
   uint32_t written_cmds = 0;
   
-  //uint32_t test_buffers_cnt = 2;
-  uint32_t test_buffers_cnt = 1000000;
+  uint32_t test_buffers_cnt = 2;
+  //uint32_t test_buffers_cnt = 1000000;
   
   while(buffers_cnt < test_buffers_cnt)
   {
@@ -186,8 +190,8 @@ void simple_dma_process(uint32_t adr)
 
 #ifdef NETWORK
         //socket_send(&dma_alloc[read_idx], (released_buffers_cnt*buf_size_words) << 2);
-        socket_send(&dma_alloc[read_idx], ((released_buffers_cnt*buf_size_words) << 2)*DMA_CNT);
-        //socket_send(&dma_alloc[read_idx], ((released_buffers_cnt*buf_size_words) << 2)*1);
+        //socket_send(&dma_alloc[read_idx], ((released_buffers_cnt*buf_size_words) << 2)*DMA_CNT);
+        socket_send(&dma_alloc[read_idx + released_buffers_cnt * buf_size_words*DMA_SEL], released_buffers_cnt*buf_size_bytes);
 #endif
       //
         //read_idx += (released_buffers_cnt * buf_size_words);
@@ -199,6 +203,72 @@ void simple_dma_process(uint32_t adr)
   }
   printf("done %d buffers\n", sdma_get_bufs_cnt());
 }
+
+
+
+
+//request DMA some buffers cnt, wait it. And then transmit to host.
+void simple_dma_buf_collect(uint32_t adr)
+{
+  const uint32_t CMD_FIFO_SIZE = 8;
+  //const uint32_t CMD_FIFO_SIZE = 1;
+
+  const uint32_t buf_size_bytes = linescan_bytes_size*512;
+
+  const uint32_t buf_size_dma   = buf_size_bytes >> 4;
+  uint32_t buf_adr_dma = adr;
+  uint32_t fifo_slots_free = CMD_FIFO_SIZE;
+  uint32_t buffers_cnt = 0, buffers_cnt_prev = 0, released_buffers_cnt = 0;
+
+  uint32_t idx_in_dma_alloc = 0;
+  uint32_t written_cmds = 0;
+  
+  uint32_t test_buffers_cnt = 2;
+  //uint32_t test_buffers_cnt = 1000000;
+  
+  while(buffers_cnt < test_buffers_cnt)
+  {
+    while((fifo_slots_free > 0) && (written_cmds < test_buffers_cnt))
+    {
+      buf_adr_dma = adr + idx_in_dma_alloc * buf_size_dma;
+      sdma_write_cmd(buf_adr_dma, buf_size_dma);
+      
+      fifo_slots_free--;
+
+      if(((idx_in_dma_alloc + 1) * buf_size_dma) >= (size_dma_alloc >> 4))
+      {
+        idx_in_dma_alloc = 0;
+      }
+      else
+      {
+        idx_in_dma_alloc += DMA_CNT;      //beecose 3 DMA
+      }
+        written_cmds++;
+    }
+
+    buffers_cnt = sdma_get_bufs_cnt();
+
+    released_buffers_cnt = buffers_cnt - buffers_cnt_prev;
+    buffers_cnt_prev = buffers_cnt;
+
+    if(released_buffers_cnt)
+    {
+      fifo_slots_free += released_buffers_cnt;
+    }
+  }
+
+
+  msync((void *)dma_alloc,size_dma_alloc, MS_SYNC);
+
+#ifdef NETWORK
+  socket_send(&dma_alloc[0], test_buffers_cnt*buf_size_bytes*DMA_CNT);
+#endif
+  
+  printf("done %d buffers\n", sdma_get_bufs_cnt());
+}
+
+
+
 
 void test_rgb()
 {
@@ -326,6 +396,7 @@ int main( int argc, char *argv[] )
   //SET_CTRL_REG(0x0);
   printf("status reg %X\n", GET_STATUS_REG());
   simple_dma_process(calc_addr);
+  //simple_dma_buf_collect(calc_addr);
 
   printf("timer: %d\n", GET_TIMER_REG());
 
