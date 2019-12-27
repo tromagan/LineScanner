@@ -44,7 +44,7 @@ while data_len_total < buf_size*bufs_cnt:
     #print(blocks_cnt)
     #print(data)
 
-    fd.write(bytearray(data))
+    #fd.write(bytearray(data))
 
 print('received %d MB' % (data_len_total/(1024*1024)))
 

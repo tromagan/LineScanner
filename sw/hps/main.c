@@ -51,6 +51,7 @@
 #define BA_LED_CLK_G    0x0210
 #define BA_LED_CLK_B    0x0220
 #define BA_LINES_DELAY  0x0230
+#define BA_LINES_EVENT  0x0240
 
 
 //bits of control register
@@ -79,6 +80,7 @@
 #define SET_LED_CLK_B(val) SET_REG(BA_LED_CLK_B, val)
 
 #define SET_LINES_DELAY(val) SET_REG(BA_LINES_DELAY, val)
+#define SET_LINES_EVENT(val) SET_REG(BA_LINES_EVENT, val)
 
 #define SET_RST() SET_CTRL_REG(GET_CTRL_REG() |  (1 << CTRL_BIT_RST))
 #define CLR_RST() SET_CTRL_REG(GET_CTRL_REG() & ~(1 << CTRL_BIT_RST))
@@ -94,12 +96,14 @@
 #define CIS_MODE_EVENT      2
 
 #define CIS_MODE CIS_MODE_CONTINUOUS
-#define LINES_DELAY 4*2592
+#define LINES_DELAY 4*2592          //delay in clock cycles
+#define LINES_EVENT 128               //lines per encoder pulse
 
 
 
 int fd, fd_dma;
 volatile uint32_t *dma_alloc;
+//uint32_t *dma_alloc;
 void *virtual_base;
 
 
@@ -178,7 +182,7 @@ void simple_dma_process(uint32_t adr)
 
     if(released_buffers_cnt)
     {
-        if(buffers_cnt % 128 == 0)
+        //if(buffers_cnt % 128 == 0)
             printf("done %d buffers\n", buffers_cnt);
 
         //printf("released_buffers_cnt=%d\n", released_buffers_cnt);
@@ -312,14 +316,21 @@ void test_rgb()
   SET_RST_CIS();
 }
 
+
+#define BUF_SIZE 2592*6*1
+uint32_t buf[BUF_SIZE >> 2];
+
 void test_send_socket()
 {
-    uint32_t size = (linescan_bytes_size*1024) >> 2;
+    //uint32_t size = (linescan_bytes_size*1024);
+  uint32_t size = BUF_SIZE;
     printf("start test_send_socket(), size(words) = %d\n", size);
+    //dma_alloc = buf;
     while(1)
     {
         socket_send(&dma_alloc[0], size);
-        usleep(50);
+      //socket_send(buf, size);
+        //usleep(50);
     }
 }
 
@@ -344,6 +355,7 @@ int main( int argc, char *argv[] )
 
 
   SET_LINES_DELAY(LINES_DELAY);
+  SET_LINES_EVENT(LINES_EVENT);
   SET_CTRL_REG(0x3 | (CIS_MODE << CTRL_BIT_CIS_MODE));
 
   
@@ -364,7 +376,7 @@ int main( int argc, char *argv[] )
 
 #ifdef NETWORK
   socket_connect();
-  //test_send_socket();
+  test_send_socket();
 #endif
 
 /////////////////////////////
