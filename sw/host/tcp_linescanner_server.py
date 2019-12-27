@@ -5,8 +5,8 @@ import struct
 #print('received %d MB' % (data_len_total/(1024*1024)))
 
 sock = socket.socket()
-#sock.bind(('192.168.0.215', 2592))
-sock.bind(('192.168.1.1', 2592))
+sock.bind(('192.168.0.215', 2592))
+#sock.bind(('192.168.1.1', 2592))
 sock.listen(1)
 conn, addr = sock.accept()
 

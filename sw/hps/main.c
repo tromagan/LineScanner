@@ -376,7 +376,7 @@ int main( int argc, char *argv[] )
 
 #ifdef NETWORK
   socket_connect();
-  test_send_socket();
+  //test_send_socket();
 #endif
 
 /////////////////////////////
