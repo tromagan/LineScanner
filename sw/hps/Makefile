@@ -12,7 +12,7 @@ CC = $(CROSS_COMPILE)gcc
 ARCH= arm
 
 build: $(TARGET)
-$(TARGET): main.o dmalloc.o sockets.o
+$(TARGET): main.o dmalloc.o sockets.o keyboard.o
 	$(CC) $(LDFLAGS)   $^ -o $@  
 %.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@
