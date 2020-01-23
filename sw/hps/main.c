@@ -9,8 +9,9 @@
 #include <unistd.h>
 #include <errno.h>
 
-
+#include "keyboard.h"
 #include "sockets.h"
+#include "fifo.h"
 
 // must be moved from quartus and gen
 #include "hps_0.h"
@@ -35,7 +36,7 @@
 
 
 #define linescan_bytes_size (2592*6)
-#define size_dma_alloc (linescan_bytes_size * 4096)
+#define size_dma_alloc (linescan_bytes_size * 4096 * 3)
 #define size_dma_alloc_words (size_dma_alloc >> 2)
 
 
@@ -89,8 +90,6 @@
 #define CLR_RST_CIS() SET_CTRL_REG(GET_CTRL_REG() & ~(1 << CTRL_BIT_RST_CIS))
 
 
-#define NETWORK
-
 #define CIS_MODE_CONTINUOUS 0
 #define CIS_MODE_BURST      1
 #define CIS_MODE_EVENT      2
@@ -98,6 +97,10 @@
 #define CIS_MODE CIS_MODE_CONTINUOUS
 #define LINES_DELAY 4*2592          //delay in clock cycles
 #define LINES_EVENT 128               //lines per encoder pulse
+
+#define NETWORK
+//host IP
+char *s_addr = "192.168.1.1";
 
 
 
@@ -163,7 +166,7 @@ void simple_dma_process(uint32_t adr)
       
       fifo_slots_free--;
 
-      if(((idx_in_dma_alloc + 1) * buf_size_dma) >= (size_dma_alloc >> 4))
+      if(((idx_in_dma_alloc + DMA_CNT) * buf_size_dma) >= (size_dma_alloc >> 4))
       {
         idx_in_dma_alloc = 0;
       }
@@ -183,7 +186,7 @@ void simple_dma_process(uint32_t adr)
     if(released_buffers_cnt)
     {
         //if(buffers_cnt % 128 == 0)
-            printf("done %d buffers\n", buffers_cnt);
+            printf("done %d buffers\n\r", buffers_cnt);
 
         //printf("released_buffers_cnt=%d\n", released_buffers_cnt);
         msync((void *)dma_alloc,size_dma_alloc, MS_SYNC);
@@ -205,7 +208,7 @@ void simple_dma_process(uint32_t adr)
           read_idx -= size_dma_alloc_words;
     }
   }
-  printf("done %d buffers\n", sdma_get_bufs_cnt());
+  printf("done %d buffers\n\r", sdma_get_bufs_cnt());
 }
 
 
@@ -239,7 +242,7 @@ void simple_dma_buf_collect(uint32_t adr)
       
       fifo_slots_free--;
 
-      if(((idx_in_dma_alloc + 1) * buf_size_dma) >= (size_dma_alloc >> 4))
+      if(((idx_in_dma_alloc + DMA_CNT) * buf_size_dma) >= (size_dma_alloc >> 4))
       {
         idx_in_dma_alloc = 0;
       }
@@ -268,10 +271,139 @@ void simple_dma_buf_collect(uint32_t adr)
   socket_send(&dma_alloc[0], test_buffers_cnt*buf_size_bytes*DMA_CNT);
 #endif
   
-  printf("done %d buffers\n", sdma_get_bufs_cnt());
+  printf("done %d buffers\n\r", sdma_get_bufs_cnt());
+}
+
+//process DMA channels all time
+void dma_process_background(uint32_t adr, char reset, uint32_t buf_size_bytes, uint32_t *adr_done)
+{
+    const uint32_t CMD_FIFO_SIZE = 7;
+
+    static uint32_t buf_adr_dma;
+    static uint32_t fifo_slots_free = 0;
+
+    uint32_t buf_size_dma   = buf_size_bytes >> 4;
+
+    static uint32_t idx_in_dma_alloc = 0;
+    uint32_t buffers_cnt = 0, released_buffers_cnt = 0;
+    static uint32_t buffers_cnt_prev = 0;
+
+    if(reset)
+    {
+        fifo_slots_free = CMD_FIFO_SIZE;
+        idx_in_dma_alloc = 0;
+        buffers_cnt_prev = 0;
+        return;
+    }
+
+    while(fifo_slots_free > 0 )
+    {
+        buf_adr_dma = adr + idx_in_dma_alloc * buf_size_dma;
+        sdma_write_cmd(buf_adr_dma, buf_size_dma);
+        
+        if(fifo_put(buf_adr_dma))
+        {
+            printf("fifo_put(): adr fifo overflow!!!\n\r");
+        }
+
+        fifo_slots_free--;
+
+        if(((idx_in_dma_alloc + DMA_CNT) * buf_size_dma) >= (size_dma_alloc >> 4))
+        {
+            idx_in_dma_alloc = 0;
+        }
+        else
+        {
+            idx_in_dma_alloc += DMA_CNT;      
+        }
+
+    }
+
+    buffers_cnt = sdma_get_bufs_cnt();
+    released_buffers_cnt = buffers_cnt - buffers_cnt_prev;
+    buffers_cnt_prev = buffers_cnt;
+
+    *adr_done = 0;
+    if(released_buffers_cnt)
+    {
+      if(released_buffers_cnt > 1)
+        printf("warning: released_buffers_cnt = %d\n\r",released_buffers_cnt);
+      
+      if(fifo_get(adr_done))
+        printf("fifo_get(): adr fifo underflow!!!\n\r");
+
+      //printf("fifo_get(): done adr %X\n\r",*adr_done);
+      //printf("buffers_cnt: %d\n\r", buffers_cnt);
+
+      fifo_slots_free += released_buffers_cnt;
+    }
 }
 
 
+//process all 3 DMAs and print first 8 words and last 8 words from every DMA buffer channel
+void simple_dma_keys(uint32_t adr)
+{
+  int key = 0; 
+  uint32_t adr_done;
+  uint32_t buf_size_bytes;
+
+  buf_size_bytes = linescan_bytes_size*512;
+
+  //reset static variables in function
+  dma_process_background(0, 1, 0, NULL);
+  
+  while(key != 'q')
+  {
+    if(get_key(&key))
+    {
+        switch(key)
+        {
+            case 'd'    :   usleep(1*1000*1000);    //make delay to see fifo overflow
+                            break;
+
+            default     :   break;
+        }
+        printf("key %c \n\r", key);
+    }
+
+    dma_process_background(adr, 0, buf_size_bytes, &adr_done);
+
+    if(adr_done != 0)
+    {
+      adr_done -= adr;
+      msync((void *)dma_alloc,size_dma_alloc, MS_SYNC);
+      printf("adr_done = %X\n\r", adr_done);
+      
+      //print first 8 and last 8 words in every DMA buffer 
+      //DMA 0
+      printf("%8X ", dma_alloc[(adr_done << 2) + 0]);
+      printf("%8X ", dma_alloc[(adr_done << 2) + 1]);
+      printf("%8X ", dma_alloc[(adr_done << 2) + (1*buf_size_bytes >> 2) - 2]);
+      printf("%8X ", dma_alloc[(adr_done << 2) + (1*buf_size_bytes >> 2) - 1]);
+      printf("\n\r");
+      //DMA 1
+      printf("%8X ", dma_alloc[(adr_done << 2) + 0 + (1*buf_size_bytes >> 2)]);
+      printf("%8X ", dma_alloc[(adr_done << 2) + 1 + (1*buf_size_bytes >> 2)]);
+      printf("%8X ", dma_alloc[(adr_done << 2) + (2*buf_size_bytes >> 2)-2]);
+      printf("%8X ", dma_alloc[(adr_done << 2) + (2*buf_size_bytes >> 2)-1]);
+      printf("\n\r");
+      //DMA 2
+      printf("%8X ", dma_alloc[(adr_done << 2) + 0 + (2*buf_size_bytes >> 2)]);
+      printf("%8X ", dma_alloc[(adr_done << 2) + 1 + (2*buf_size_bytes >> 2)]);
+      printf("%8X ", dma_alloc[(adr_done << 2) + (3*buf_size_bytes >> 2)-2]);
+      printf("%8X ", dma_alloc[(adr_done << 2) + (3*buf_size_bytes >> 2)-1]);
+      printf("\n\r");
+
+      printf("\n\r\n\r");
+    }
+    
+    if(GET_STATUS_REG() & 0x1)  //detect pixel fifo overflow
+    {
+        printf("pixel fifo overflow! \n\r");
+        break;
+    }
+  }
+}
 
 
 void test_rgb()
@@ -336,6 +468,10 @@ void test_send_socket()
 
 int main( int argc, char *argv[] ) 
 {
+  
+
+  set_conio_terminal_mode();
+
   fd_dma = dminit();
   fd = open( "/dev/mem", O_RDWR | O_SYNC );
   if( fd < 0 || fd_dma < 0) {
@@ -350,7 +486,7 @@ int main( int argc, char *argv[] )
     perror( "mmap" );
     return 1;
   }
-  printf("ALT_LWFPGASLVS_OFST: 0x%x\n", ALT_LWFPGASLVS_OFST);
+  //printf("ALT_LWFPGASLVS_OFST: 0x%x\n\r", ALT_LWFPGASLVS_OFST);
 
 
 
@@ -359,7 +495,7 @@ int main( int argc, char *argv[] )
   SET_CTRL_REG(0x3 | (CIS_MODE << CTRL_BIT_CIS_MODE));
 
   
-  printf("timer: %d\n", GET_TIMER_REG());
+  printf("timer: %d\n\r", GET_TIMER_REG());
 
   //test_rgb();
 
@@ -373,9 +509,8 @@ int main( int argc, char *argv[] )
   }
   uint32_t calc_addr = ((uint32_t) addr >> 4);// return 
 
-
 #ifdef NETWORK
-  socket_connect();
+  socket_connect(s_addr);
   //test_send_socket();
 #endif
 
@@ -401,19 +536,24 @@ int main( int argc, char *argv[] )
   // SET_LED_CLK_G((0 << 16) | 10);
   // SET_LED_CLK_B((0 << 16) | 10);
 
-
+  
   
   CLR_RST();
   CLR_RST_CIS();
   //SET_CTRL_REG(0x0);
-  printf("status reg %X\n", GET_STATUS_REG());
+  printf("status reg %X\n\r", GET_STATUS_REG());
+  
+//test prcesses
   simple_dma_process(calc_addr);
   //simple_dma_buf_collect(calc_addr);
-
-  printf("timer: %d\n", GET_TIMER_REG());
+  //simple_dma_keys(calc_addr);
+//
+  
+  printf("timer: %d\n\r", GET_TIMER_REG());
 
   SET_RST();
-  //SET_RST_CIS();
+  SET_RST_CIS();
+
 
 
 
@@ -433,7 +573,7 @@ int main( int argc, char *argv[] )
   close(fd_dma);
   socket_close();
   
-  printf("exit\n");
+  printf("exit\n\r");
   return 0;
 }
 
