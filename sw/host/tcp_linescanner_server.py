@@ -5,8 +5,8 @@ import struct
 #print('received %d MB' % (data_len_total/(1024*1024)))
 
 sock = socket.socket()
-sock.bind(('192.168.0.215', 2592))
-#sock.bind(('192.168.1.1', 2592))
+#sock.bind(('192.168.0.215', 2592))
+sock.bind(('192.168.1.1', 2592))
 sock.listen(1)
 conn, addr = sock.accept()
 
@@ -44,7 +44,7 @@ while data_len_total < buf_size*bufs_cnt:
     #print(blocks_cnt)
     #print(data)
 
-    #fd.write(bytearray(data))
+    fd.write(bytearray(data))
 
 print('received %d MB' % (data_len_total/(1024*1024)))
 
