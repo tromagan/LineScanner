@@ -11,19 +11,17 @@
 #include "sockets.h"
 
 
-const char *s_addr = "192.168.0.215";   //server adr
-//const char *s_addr = "192.168.1.1";   //server adr
 const uint16_t  i_port = 2592;          //server port
 
 int s = -1;
 
-uint32_t socket_connect()
+uint32_t socket_connect(char *s_addr)
 {
-    printf("Create socket\n");
+    printf("Create socket\n\r");
     s = socket(AF_INET, SOCK_STREAM, 0);
     if (s < 0) 
     {
-      printf("create socket error\n");
+      printf("create socket error\n\r");
       return 1;
     }
 
@@ -34,9 +32,9 @@ uint32_t socket_connect()
     server_addr.sin_addr.s_addr = inet_addr(s_addr);
     server_addr.sin_port = htons(i_port);
 
-    printf("Trying connect\n");
+    printf("Trying connect\n\r");
     if (connect(s, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
-        printf("connect failed\n");
+        printf("connect failed\n\r");
         return 1;
     }
 
