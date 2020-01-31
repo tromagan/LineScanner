@@ -179,7 +179,7 @@ generate
             .DATA_WIDTH                 ( 16                ),     //   Data width 
             .DEPTH                      ( 12                ),     //   Words count in FIFO, 2**DEPTH 
             .AFULL_OFFSET               ( 2                 ),     //   Sets almost full threshold. How many DIN_WR for FULL flag occurrence 
-            .AEMPTY_OFFSET              ( 2                 )      //   Sets the almost empty threshold
+            .AEMPTY_OFFSET              ( 1                 )      //   Sets the almost empty threshold
         )           
         fifo_bram_pixel         
         (           
@@ -200,7 +200,8 @@ generate
 endgenerate
 
 
-assign w_fifo_rd = r_fifo_rd & {3{~(|w_fifo_empty)}} & {3{~AFULL}};
+//assign w_fifo_rd = r_fifo_rd & {3{~(|w_fifo_empty)}} & {3{~AFULL}};
+assign w_fifo_rd = r_fifo_rd & {3{~(w_fifo_empty)}} & {3{~AFULL}};
 
 always @(posedge CLK)
 begin
@@ -214,7 +215,9 @@ begin
 end
 
 always @(posedge CLK)
-if((RST == 1'b1) || (|r_fifo_empty == 1'b1))
+//if((RST == 1'b1) || (|r_fifo_empty == 1'b1))
+//if((RST == 1'b1))
+if((RST == 1'b1) || (|r_fifo_empty[1:0] == 1'b1))
 begin
     r_rgb_cnt <= 2'd0;
     r_fifo_rd <= 3'd0;
@@ -226,7 +229,8 @@ begin
     begin
         case(r_rgb_cnt)
             2'd0    :   begin
-                            if( w_fifo_empty[2] == 1'b0 && w_fifo_empty[1] == 1'b0)     //RG
+                            //if( w_fifo_empty[2] == 1'b0 && w_fifo_empty[1] == 1'b0)     //RG
+                            if( w_fifo_aempty[2] == 1'b0 && w_fifo_aempty[1] == 1'b0)     //RG
                             begin
                                 r_fifo_rd <= 3'b110;
                                 r_rgb_cnt <= 2'd1;

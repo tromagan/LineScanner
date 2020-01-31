@@ -59,11 +59,14 @@ top top
 );
 
 
+integer pulse_period_ms = 2;
+
 initial
 begin
     forever
     begin
-        repeat(5000) @(posedge CLK);
+        //repeat(5000) @(posedge CLK);
+        repeat(pulse_period_ms * 1000 * 2) @(posedge CLK);
 
         if(enc_inv == 1'b1)
             r_encoder[1] = ~r_encoder[1];

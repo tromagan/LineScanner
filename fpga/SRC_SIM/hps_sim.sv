@@ -129,9 +129,9 @@ begin
     force LED_CLK_ON_GREEN_EXPORT   = ((0 << 16) | 0);
     force LED_CLK_ON_BLUE_EXPORT    = ((1 << 16) | 0);
 
-    r_cis_mode = 2'd0;
+    r_cis_mode = 2'd2;
     force LINES_DELAY_EXPORT = 24'd10000;
-    force LINES_CNT_ENCODER_EXPORT = 16'd3;
+    force LINES_CNT_ENCODER_EXPORT = 16'd1;
 
     r_sensor_reset = 1'b1;
     repeat(10)  @(posedge clk_0);
@@ -241,7 +241,7 @@ begin
       
       fifo_slots_free--;
 
-      if(((idx_in_dma_alloc + 1) * buf_size_dma) >= (size_dma_alloc >> 4))
+      if(((idx_in_dma_alloc + 3) * buf_size_dma) >= (size_dma_alloc >> 4))
         idx_in_dma_alloc = 0;
       else
         //idx_in_dma_alloc++;
