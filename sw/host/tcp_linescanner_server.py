@@ -1,12 +1,15 @@
 import socket
 import struct
 
-#data_len_total = 32*1024*1024
-#print('received %d MB' % (data_len_total/(1024*1024)))
+ip_host = '192.168.1.1'
+#fname = "f:/testfile.pcm"
+fname = "testfile.pcm"
+
+
 
 sock = socket.socket()
 #sock.bind(('192.168.0.215', 2592))
-sock.bind(('192.168.1.1', 2592))
+sock.bind((ip_host, 2592))
 sock.listen(1)
 conn, addr = sock.accept()
 
@@ -15,12 +18,12 @@ print('connected:', addr)
 
 
 
-#fd = open("f:/testfile.pcm","wb") 
-fd = open("testfile.pcm","wb") 
+fd = open(fname,"wb") 
 data_len_total = 0
 blocks_cnt = 0
 #buf_size = 16384
 #bufs_cnt = 1024*2
+
 
 #for all DMA channels
 #dma_cnt = 3
