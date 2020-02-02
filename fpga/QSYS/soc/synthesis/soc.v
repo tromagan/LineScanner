@@ -10,6 +10,7 @@ module soc (
 		output wire [31:0]  dma_adr_export,                  //              dma_adr.export
 		output wire [31:0]  dma_buf_size_export,             //         dma_buf_size.export
 		input  wire [31:0]  dma_status_export,               //           dma_status.export
+		input  wire [31:0]  encoder_cnt_export,              //          encoder_cnt.export
 		output wire         hps_io_hps_io_emac1_inst_TX_CLK, //               hps_io.hps_io_emac1_inst_TX_CLK
 		output wire         hps_io_hps_io_emac1_inst_TXD0,   //                     .hps_io_emac1_inst_TXD0
 		output wire         hps_io_hps_io_emac1_inst_TXD1,   //                     .hps_io_emac1_inst_TXD1
@@ -179,8 +180,10 @@ module soc (
 	wire   [1:0] mm_interconnect_0_pio_lines_cnt_encoder_s1_address;    // mm_interconnect_0:pio_lines_cnt_encoder_s1_address -> pio_lines_cnt_encoder:address
 	wire         mm_interconnect_0_pio_lines_cnt_encoder_s1_write;      // mm_interconnect_0:pio_lines_cnt_encoder_s1_write -> pio_lines_cnt_encoder:write_n
 	wire  [31:0] mm_interconnect_0_pio_lines_cnt_encoder_s1_writedata;  // mm_interconnect_0:pio_lines_cnt_encoder_s1_writedata -> pio_lines_cnt_encoder:writedata
+	wire  [31:0] mm_interconnect_0_pio_encoder_cnt_s1_readdata;         // pio_encoder_cnt:readdata -> mm_interconnect_0:pio_encoder_cnt_s1_readdata
+	wire   [2:0] mm_interconnect_0_pio_encoder_cnt_s1_address;          // mm_interconnect_0:pio_encoder_cnt_s1_address -> pio_encoder_cnt:address
 	wire  [31:0] hps_0_f2h_irq1_irq;                                    // irq_mapper:sender_irq -> hps_0:f2h_irq_p1
-	wire         rst_controller_reset_out_reset;                        // rst_controller:reset_out -> [mm_interconnect_0:pio_dma_buf_size_reset_reset_bridge_in_reset_reset, pio_ctrl_reg:reset_n, pio_dma_adr:reset_n, pio_dma_buf_size:reset_n, pio_dma_status:reset_n, pio_led_clk_on_0:reset_n, pio_led_clk_on_1:reset_n, pio_led_clk_on_2:reset_n, pio_lines_cnt_encoder:reset_n, pio_lines_delay:reset_n, pio_status_reg:reset_n, pio_timer:reset_n]
+	wire         rst_controller_reset_out_reset;                        // rst_controller:reset_out -> [mm_interconnect_0:pio_dma_buf_size_reset_reset_bridge_in_reset_reset, pio_ctrl_reg:reset_n, pio_dma_adr:reset_n, pio_dma_buf_size:reset_n, pio_dma_status:reset_n, pio_encoder_cnt:reset_n, pio_led_clk_on_0:reset_n, pio_led_clk_on_1:reset_n, pio_led_clk_on_2:reset_n, pio_lines_cnt_encoder:reset_n, pio_lines_delay:reset_n, pio_status_reg:reset_n, pio_timer:reset_n]
 
 	soc_hps_0 #(
 		.F2S_Width (0),
@@ -344,6 +347,14 @@ module soc (
 		.in_port  (dma_status_export)                             // external_connection.export
 	);
 
+	soc_pio_encoder_cnt pio_encoder_cnt (
+		.clk      (bus_clk_clk),                                   //                 clk.clk
+		.reset_n  (~rst_controller_reset_out_reset),               //               reset.reset_n
+		.address  (mm_interconnect_0_pio_encoder_cnt_s1_address),  //                  s1.address
+		.readdata (mm_interconnect_0_pio_encoder_cnt_s1_readdata), //                    .readdata
+		.in_port  (encoder_cnt_export)                             // external_connection.export
+	);
+
 	soc_pio_dma_adr pio_led_clk_on_0 (
 		.clk        (bus_clk_clk),                                      //                 clk.clk
 		.reset_n    (~rst_controller_reset_out_reset),                  //               reset.reset_n
@@ -399,7 +410,7 @@ module soc (
 		.out_port   (lines_delay_export)                               // external_connection.export
 	);
 
-	soc_pio_status_reg pio_status_reg (
+	soc_pio_encoder_cnt pio_status_reg (
 		.clk      (bus_clk_clk),                                  //                 clk.clk
 		.reset_n  (~rst_controller_reset_out_reset),              //               reset.reset_n
 		.address  (mm_interconnect_0_pio_status_reg_s1_address),  //                  s1.address
@@ -407,7 +418,7 @@ module soc (
 		.in_port  (status_reg_export)                             // external_connection.export
 	);
 
-	soc_pio_status_reg pio_timer (
+	soc_pio_encoder_cnt pio_timer (
 		.clk      (bus_clk_clk),                             //                 clk.clk
 		.reset_n  (~rst_controller_reset_out_reset),         //               reset.reset_n
 		.address  (mm_interconnect_0_pio_timer_s1_address),  //                  s1.address
@@ -480,6 +491,8 @@ module soc (
 		.pio_dma_buf_size_s1_chipselect                     (mm_interconnect_0_pio_dma_buf_size_s1_chipselect),      //                                             .chipselect
 		.pio_dma_status_s1_address                          (mm_interconnect_0_pio_dma_status_s1_address),           //                            pio_dma_status_s1.address
 		.pio_dma_status_s1_readdata                         (mm_interconnect_0_pio_dma_status_s1_readdata),          //                                             .readdata
+		.pio_encoder_cnt_s1_address                         (mm_interconnect_0_pio_encoder_cnt_s1_address),          //                           pio_encoder_cnt_s1.address
+		.pio_encoder_cnt_s1_readdata                        (mm_interconnect_0_pio_encoder_cnt_s1_readdata),         //                                             .readdata
 		.pio_led_clk_on_0_s1_address                        (mm_interconnect_0_pio_led_clk_on_0_s1_address),         //                          pio_led_clk_on_0_s1.address
 		.pio_led_clk_on_0_s1_write                          (mm_interconnect_0_pio_led_clk_on_0_s1_write),           //                                             .write
 		.pio_led_clk_on_0_s1_readdata                       (mm_interconnect_0_pio_led_clk_on_0_s1_readdata),        //                                             .readdata

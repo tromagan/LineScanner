@@ -5,11 +5,11 @@
   <columns>
    <connections preferredWidth="143" />
    <irq preferredWidth="47" />
-   <inputclock preferredWidth="158" />
+   <inputclock preferredWidth="187" />
    <name preferredWidth="226" />
   </columns>
  </systemtable>
  <library expandedCategories="Project,Library" />
- <window width="2560" height="1415" x="544" y="119" />
+ <window width="2576" height="1456" x="-8" y="-8" />
  <generation block_symbol_file="0" />
 </preferences>

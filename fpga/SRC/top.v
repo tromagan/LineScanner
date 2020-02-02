@@ -120,7 +120,7 @@ wire    [ 31 : 0 ]      w_r_clk_on_off, w_g_clk_on_off, w_b_clk_on_off;
 wire    [  2 : 0 ]      w_dma_cmd_fifo_empty, w_dma_cmd_fifo_aempty;
 wire    [ 15 : 0 ]      w_dma_done_cnt  [ 2 : 0 ];
 wire    [ 31 : 0 ]      w_timer;
-
+wire    [ 31 : 0 ]      w_pulses_cnt;
 
 
 
@@ -161,6 +161,14 @@ wire                    w_global_dbg;
 
 wire    [  2 : 0 ]      w_encoder;
 wire                    w_encoder_pulse;
+wire    [  1 : 0 ]      w_encoder_pulse_dir;
+
+initial
+begin
+    r_test_mode[0] = 2'd0;
+    r_test_mode[1] = 2'd0;
+    r_test_mode[2] = 2'd0;
+end
 
 reg_sync
 #(
@@ -188,8 +196,9 @@ encoder_controller encoder_controller
             
     .SIG_A                  ( w_encoder[1]      ),
     .SIG_B                  ( w_encoder[0]      ),
+
+    .PULSE_DIR              ( w_encoder_pulse_dir ),    //out, u[2] - pulse direction: [0] bit - clockwise, [1] bit - counterclockwise
             
-    .TMP                    ( w_enc_tmp         ),
     .PULSE                  ( w_encoder_pulse   )
 );
 
@@ -508,6 +517,7 @@ soc u0
     .lines_delay_export                         ( w_cis_lines_delay         ),
     .lines_cnt_encoder_export                   ( w_cis_lcnt_encoder        ),
 	.timer_cnt_export                           ( w_timer                   ),                        //                        timer_reg.readdata
+    .encoder_cnt_export                         ( w_pulses_cnt              ),
 
     .ctrl_reg_out_port                          ( w_ctrl_reg                ),          //out
     .ctrl_reg_in_port                           ( w_ctrl_reg                ),          //in
@@ -602,6 +612,14 @@ timer
 );
 
 
+encoder_cnt_debug encoder_cnt_debug
+(
+    .CLK                                        ( w_bus_clk             ),
+    .RST                                        ( w_linux_reset         ),
+    .ENC_PULSES_DIR                             ( w_encoder_pulse_dir   ),
+    .CNT                                        ( w_pulses_cnt          )
+);
+
 
 `ifdef SIM
 assign CLKC  = w_clk_0;
@@ -618,6 +636,6 @@ assign LED[3] = 1'b0;
 assign LED[2] = 1'b0;
 assign LED[1] = 1'b0;
 
-assign LED[0] = {7'd0, w_enc_tmp | w_si_toggle | ^w_lrgb | ^w_si_cnt | ^w_adc_data} | {7'd0,w_global_dbg};
+assign LED[0] = {7'd0, w_si_toggle | ^w_lrgb | ^w_si_cnt | ^w_adc_data} | {7'd0,w_global_dbg};
 
 endmodule

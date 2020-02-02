@@ -1,5 +1,5 @@
 Info: Starting: Create HDL design files for synthesis
-Info: qsys-generate /home/denc/Projects/LineScanner/fpga/QSYS/soc.qsys --synthesis=VERILOG --output-directory=/home/denc/Projects/LineScanner/fpga/QSYS/soc/synthesis --family="Cyclone V" --part=5CSEMA4U23C6
+Info: qsys-generate D:\Projects\LineScanner\fpga\QSYS\soc.qsys --synthesis=VERILOG --output-directory=D:\Projects\LineScanner\fpga\QSYS\soc\synthesis --family="Cyclone V" --part=5CSEMA4U23C6
 Progress: Loading QSYS/soc.qsys
 Progress: Reading input file
 Progress: Adding clock_bridge_0 [altera_clock_bridge 18.1]
@@ -14,6 +14,8 @@ Progress: Adding pio_dma_buf_size [altera_avalon_pio 18.1]
 Progress: Parameterizing module pio_dma_buf_size
 Progress: Adding pio_dma_status [altera_avalon_pio 18.1]
 Progress: Parameterizing module pio_dma_status
+Progress: Adding pio_encoder_cnt [altera_avalon_pio 18.1]
+Progress: Parameterizing module pio_encoder_cnt
 Progress: Adding pio_led_clk_on_0 [altera_avalon_pio 18.1]
 Progress: Parameterizing module pio_led_clk_on_0
 Progress: Adding pio_led_clk_on_1 [altera_avalon_pio 18.1]
@@ -40,6 +42,7 @@ Warning: soc.hps_0: "Configuration/HPS-to-FPGA user 0 clock frequency" (desired_
 Warning: soc.hps_0: 1 or more output clock frequencies cannot be achieved precisely, consider revising desired output clock frequencies.
 Info: soc.pio_ctrl_reg: PIO inputs are not hardwired in test bench. Undefined values will be read from PIO inputs during simulation.
 Info: soc.pio_dma_status: PIO inputs are not hardwired in test bench. Undefined values will be read from PIO inputs during simulation.
+Info: soc.pio_encoder_cnt: PIO inputs are not hardwired in test bench. Undefined values will be read from PIO inputs during simulation.
 Info: soc.pio_status_reg: PIO inputs are not hardwired in test bench. Undefined values will be read from PIO inputs during simulation.
 Info: soc.pio_timer: PIO inputs are not hardwired in test bench. Undefined values will be read from PIO inputs during simulation.
 Info: soc.pll_0: The legal reference clock frequency is 5.0 MHz..800.0 MHz
@@ -55,21 +58,21 @@ Warning: hps_0: "Configuration/HPS-to-FPGA user 0 clock frequency" (desired_cfg_
 Warning: hps_0: 1 or more output clock frequencies cannot be achieved precisely, consider revising desired output clock frequencies.
 Info: hps_0: "soc" instantiated altera_hps "hps_0"
 Info: pio_ctrl_reg: Starting RTL generation for module 'soc_pio_ctrl_reg'
-Info: pio_ctrl_reg:   Generation command is [exec /home/denc/intelFPGA_lite/18.1/quartus/linux64/perl/bin/perl -I /home/denc/intelFPGA_lite/18.1/quartus/linux64/perl/lib -I /home/denc/intelFPGA_lite/18.1/quartus/sopc_builder/bin/europa -I /home/denc/intelFPGA_lite/18.1/quartus/sopc_builder/bin/perl_lib -I /home/denc/intelFPGA_lite/18.1/quartus/sopc_builder/bin -I /home/denc/intelFPGA_lite/18.1/quartus/../ip/altera/sopc_builder_ip/common -I /home/denc/intelFPGA_lite/18.1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- /home/denc/intelFPGA_lite/18.1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=soc_pio_ctrl_reg --dir=/tmp/alt8249_9065759153742492015.dir/0002_pio_ctrl_reg_gen/ --quartus_dir=/home/denc/intelFPGA_lite/18.1/quartus --verilog --config=/tmp/alt8249_9065759153742492015.dir/0002_pio_ctrl_reg_gen//soc_pio_ctrl_reg_component_configuration.pl  --do_build_sim=0  ]
+Info: pio_ctrl_reg:   Generation command is [exec F:/intelfpga_lite/18.1/quartus/bin64/perl/bin/perl.exe -I F:/intelfpga_lite/18.1/quartus/bin64/perl/lib -I F:/intelfpga_lite/18.1/quartus/sopc_builder/bin/europa -I F:/intelfpga_lite/18.1/quartus/sopc_builder/bin/perl_lib -I F:/intelfpga_lite/18.1/quartus/sopc_builder/bin -I F:/intelfpga_lite/18.1/quartus/../ip/altera/sopc_builder_ip/common -I F:/intelfpga_lite/18.1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- F:/intelfpga_lite/18.1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=soc_pio_ctrl_reg --dir=C:/Users/Den/AppData/Local/Temp/alt8293_3161289203026018029.dir/0002_pio_ctrl_reg_gen/ --quartus_dir=F:/intelfpga_lite/18.1/quartus --verilog --config=C:/Users/Den/AppData/Local/Temp/alt8293_3161289203026018029.dir/0002_pio_ctrl_reg_gen//soc_pio_ctrl_reg_component_configuration.pl  --do_build_sim=0  ]
 Info: pio_ctrl_reg: Done RTL generation for module 'soc_pio_ctrl_reg'
 Info: pio_ctrl_reg: "soc" instantiated altera_avalon_pio "pio_ctrl_reg"
 Info: pio_dma_adr: Starting RTL generation for module 'soc_pio_dma_adr'
-Info: pio_dma_adr:   Generation command is [exec /home/denc/intelFPGA_lite/18.1/quartus/linux64/perl/bin/perl -I /home/denc/intelFPGA_lite/18.1/quartus/linux64/perl/lib -I /home/denc/intelFPGA_lite/18.1/quartus/sopc_builder/bin/europa -I /home/denc/intelFPGA_lite/18.1/quartus/sopc_builder/bin/perl_lib -I /home/denc/intelFPGA_lite/18.1/quartus/sopc_builder/bin -I /home/denc/intelFPGA_lite/18.1/quartus/../ip/altera/sopc_builder_ip/common -I /home/denc/intelFPGA_lite/18.1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- /home/denc/intelFPGA_lite/18.1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=soc_pio_dma_adr --dir=/tmp/alt8249_9065759153742492015.dir/0003_pio_dma_adr_gen/ --quartus_dir=/home/denc/intelFPGA_lite/18.1/quartus --verilog --config=/tmp/alt8249_9065759153742492015.dir/0003_pio_dma_adr_gen//soc_pio_dma_adr_component_configuration.pl  --do_build_sim=0  ]
+Info: pio_dma_adr:   Generation command is [exec F:/intelfpga_lite/18.1/quartus/bin64/perl/bin/perl.exe -I F:/intelfpga_lite/18.1/quartus/bin64/perl/lib -I F:/intelfpga_lite/18.1/quartus/sopc_builder/bin/europa -I F:/intelfpga_lite/18.1/quartus/sopc_builder/bin/perl_lib -I F:/intelfpga_lite/18.1/quartus/sopc_builder/bin -I F:/intelfpga_lite/18.1/quartus/../ip/altera/sopc_builder_ip/common -I F:/intelfpga_lite/18.1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- F:/intelfpga_lite/18.1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=soc_pio_dma_adr --dir=C:/Users/Den/AppData/Local/Temp/alt8293_3161289203026018029.dir/0003_pio_dma_adr_gen/ --quartus_dir=F:/intelfpga_lite/18.1/quartus --verilog --config=C:/Users/Den/AppData/Local/Temp/alt8293_3161289203026018029.dir/0003_pio_dma_adr_gen//soc_pio_dma_adr_component_configuration.pl  --do_build_sim=0  ]
 Info: pio_dma_adr: Done RTL generation for module 'soc_pio_dma_adr'
 Info: pio_dma_adr: "soc" instantiated altera_avalon_pio "pio_dma_adr"
 Info: pio_dma_status: Starting RTL generation for module 'soc_pio_dma_status'
-Info: pio_dma_status:   Generation command is [exec /home/denc/intelFPGA_lite/18.1/quartus/linux64/perl/bin/perl -I /home/denc/intelFPGA_lite/18.1/quartus/linux64/perl/lib -I /home/denc/intelFPGA_lite/18.1/quartus/sopc_builder/bin/europa -I /home/denc/intelFPGA_lite/18.1/quartus/sopc_builder/bin/perl_lib -I /home/denc/intelFPGA_lite/18.1/quartus/sopc_builder/bin -I /home/denc/intelFPGA_lite/18.1/quartus/../ip/altera/sopc_builder_ip/common -I /home/denc/intelFPGA_lite/18.1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- /home/denc/intelFPGA_lite/18.1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=soc_pio_dma_status --dir=/tmp/alt8249_9065759153742492015.dir/0004_pio_dma_status_gen/ --quartus_dir=/home/denc/intelFPGA_lite/18.1/quartus --verilog --config=/tmp/alt8249_9065759153742492015.dir/0004_pio_dma_status_gen//soc_pio_dma_status_component_configuration.pl  --do_build_sim=0  ]
+Info: pio_dma_status:   Generation command is [exec F:/intelfpga_lite/18.1/quartus/bin64/perl/bin/perl.exe -I F:/intelfpga_lite/18.1/quartus/bin64/perl/lib -I F:/intelfpga_lite/18.1/quartus/sopc_builder/bin/europa -I F:/intelfpga_lite/18.1/quartus/sopc_builder/bin/perl_lib -I F:/intelfpga_lite/18.1/quartus/sopc_builder/bin -I F:/intelfpga_lite/18.1/quartus/../ip/altera/sopc_builder_ip/common -I F:/intelfpga_lite/18.1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- F:/intelfpga_lite/18.1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=soc_pio_dma_status --dir=C:/Users/Den/AppData/Local/Temp/alt8293_3161289203026018029.dir/0004_pio_dma_status_gen/ --quartus_dir=F:/intelfpga_lite/18.1/quartus --verilog --config=C:/Users/Den/AppData/Local/Temp/alt8293_3161289203026018029.dir/0004_pio_dma_status_gen//soc_pio_dma_status_component_configuration.pl  --do_build_sim=0  ]
 Info: pio_dma_status: Done RTL generation for module 'soc_pio_dma_status'
 Info: pio_dma_status: "soc" instantiated altera_avalon_pio "pio_dma_status"
-Info: pio_status_reg: Starting RTL generation for module 'soc_pio_status_reg'
-Info: pio_status_reg:   Generation command is [exec /home/denc/intelFPGA_lite/18.1/quartus/linux64/perl/bin/perl -I /home/denc/intelFPGA_lite/18.1/quartus/linux64/perl/lib -I /home/denc/intelFPGA_lite/18.1/quartus/sopc_builder/bin/europa -I /home/denc/intelFPGA_lite/18.1/quartus/sopc_builder/bin/perl_lib -I /home/denc/intelFPGA_lite/18.1/quartus/sopc_builder/bin -I /home/denc/intelFPGA_lite/18.1/quartus/../ip/altera/sopc_builder_ip/common -I /home/denc/intelFPGA_lite/18.1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- /home/denc/intelFPGA_lite/18.1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=soc_pio_status_reg --dir=/tmp/alt8249_9065759153742492015.dir/0005_pio_status_reg_gen/ --quartus_dir=/home/denc/intelFPGA_lite/18.1/quartus --verilog --config=/tmp/alt8249_9065759153742492015.dir/0005_pio_status_reg_gen//soc_pio_status_reg_component_configuration.pl  --do_build_sim=0  ]
-Info: pio_status_reg: Done RTL generation for module 'soc_pio_status_reg'
-Info: pio_status_reg: "soc" instantiated altera_avalon_pio "pio_status_reg"
+Info: pio_encoder_cnt: Starting RTL generation for module 'soc_pio_encoder_cnt'
+Info: pio_encoder_cnt:   Generation command is [exec F:/intelfpga_lite/18.1/quartus/bin64/perl/bin/perl.exe -I F:/intelfpga_lite/18.1/quartus/bin64/perl/lib -I F:/intelfpga_lite/18.1/quartus/sopc_builder/bin/europa -I F:/intelfpga_lite/18.1/quartus/sopc_builder/bin/perl_lib -I F:/intelfpga_lite/18.1/quartus/sopc_builder/bin -I F:/intelfpga_lite/18.1/quartus/../ip/altera/sopc_builder_ip/common -I F:/intelfpga_lite/18.1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- F:/intelfpga_lite/18.1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=soc_pio_encoder_cnt --dir=C:/Users/Den/AppData/Local/Temp/alt8293_3161289203026018029.dir/0005_pio_encoder_cnt_gen/ --quartus_dir=F:/intelfpga_lite/18.1/quartus --verilog --config=C:/Users/Den/AppData/Local/Temp/alt8293_3161289203026018029.dir/0005_pio_encoder_cnt_gen//soc_pio_encoder_cnt_component_configuration.pl  --do_build_sim=0  ]
+Info: pio_encoder_cnt: Done RTL generation for module 'soc_pio_encoder_cnt'
+Info: pio_encoder_cnt: "soc" instantiated altera_avalon_pio "pio_encoder_cnt"
 Info: pll_0: "soc" instantiated altera_pll "pll_0"
 Info: avalon_st_adapter: Inserting error_adapter: error_adapter_0
 Info: avalon_st_adapter_001: Inserting error_adapter: error_adapter_0
@@ -82,6 +85,7 @@ Info: avalon_st_adapter_007: Inserting error_adapter: error_adapter_0
 Info: avalon_st_adapter_008: Inserting error_adapter: error_adapter_0
 Info: avalon_st_adapter_009: Inserting error_adapter: error_adapter_0
 Info: avalon_st_adapter_010: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_011: Inserting error_adapter: error_adapter_0
 Info: mm_interconnect_0: "soc" instantiated altera_mm_interconnect "mm_interconnect_0"
 Info: irq_mapper: "soc" instantiated altera_irq_mapper "irq_mapper"
 Info: rst_controller: "soc" instantiated altera_reset_controller "rst_controller"
@@ -94,15 +98,15 @@ Info: pio_dma_buf_size_s1_agent_rsp_fifo: "mm_interconnect_0" instantiated alter
 Info: router: "mm_interconnect_0" instantiated altera_merlin_router "router"
 Info: router_002: "mm_interconnect_0" instantiated altera_merlin_router "router_002"
 Info: hps_0_h2f_lw_axi_master_wr_limiter: "mm_interconnect_0" instantiated altera_merlin_traffic_limiter "hps_0_h2f_lw_axi_master_wr_limiter"
-Info: Reusing file /home/denc/Projects/LineScanner/fpga/QSYS/soc/synthesis/submodules/altera_avalon_sc_fifo.v
+Info: Reusing file D:/Projects/LineScanner/fpga/QSYS/soc/synthesis/submodules/altera_avalon_sc_fifo.v
 Info: pio_dma_buf_size_s1_burst_adapter: "mm_interconnect_0" instantiated altera_merlin_burst_adapter "pio_dma_buf_size_s1_burst_adapter"
-Info: Reusing file /home/denc/Projects/LineScanner/fpga/QSYS/soc/synthesis/submodules/altera_merlin_address_alignment.sv
-Info: Reusing file /home/denc/Projects/LineScanner/fpga/QSYS/soc/synthesis/submodules/altera_avalon_st_pipeline_base.v
+Info: Reusing file D:/Projects/LineScanner/fpga/QSYS/soc/synthesis/submodules/altera_merlin_address_alignment.sv
+Info: Reusing file D:/Projects/LineScanner/fpga/QSYS/soc/synthesis/submodules/altera_avalon_st_pipeline_base.v
 Info: cmd_demux: "mm_interconnect_0" instantiated altera_merlin_demultiplexer "cmd_demux"
 Info: cmd_mux: "mm_interconnect_0" instantiated altera_merlin_multiplexer "cmd_mux"
 Info: rsp_demux: "mm_interconnect_0" instantiated altera_merlin_demultiplexer "rsp_demux"
 Info: rsp_mux: "mm_interconnect_0" instantiated altera_merlin_multiplexer "rsp_mux"
-Info: Reusing file /home/denc/Projects/LineScanner/fpga/QSYS/soc/synthesis/submodules/altera_merlin_arbitrator.sv
+Info: Reusing file D:/Projects/LineScanner/fpga/QSYS/soc/synthesis/submodules/altera_merlin_arbitrator.sv
 Info: avalon_st_adapter: "mm_interconnect_0" instantiated altera_avalon_st_adapter "avalon_st_adapter"
 Info: border: "hps_io" instantiated altera_interface_generator "border"
 Info: error_adapter_0: "avalon_st_adapter" instantiated error_adapter "error_adapter_0"

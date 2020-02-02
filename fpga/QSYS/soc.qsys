@@ -119,6 +119,22 @@
          type = "String";
       }
    }
+   element pio_encoder_cnt
+   {
+      datum _sortIndex
+      {
+         value = "14";
+         type = "int";
+      }
+   }
+   element pio_encoder_cnt.s1
+   {
+      datum baseAddress
+      {
+         value = "608";
+         type = "String";
+      }
+   }
    element pio_led_clk_on_0
    {
       datum _sortIndex
@@ -305,6 +321,11 @@
  <interface
    name="dma_status"
    internal="pio_dma_status.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="encoder_cnt"
+   internal="pio_encoder_cnt.external_connection"
    type="conduit"
    dir="end" />
  <interface name="hps_io" internal="hps_0.hps_io" type="conduit" dir="end" />
@@ -969,6 +990,24 @@
   <parameter name="width" value="32" />
  </module>
  <module
+   name="pio_encoder_cnt"
+   kind="altera_avalon_pio"
+   version="18.1"
+   enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="true" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="80000000" />
+  <parameter name="direction" value="Input" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="32" />
+ </module>
+ <module
    name="pio_led_clk_on_0"
    kind="altera_avalon_pio"
    version="18.1"
@@ -1393,6 +1432,15 @@
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
+   kind="avalon"
+   version="18.1"
+   start="hps_0.h2f_lw_axi_master"
+   end="pio_encoder_cnt.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0260" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
    kind="clock"
    version="18.1"
    start="pll_0.outclk0"
@@ -1443,6 +1491,11 @@
    version="18.1"
    start="pll_0.outclk0"
    end="pio_lines_cnt_encoder.clk" />
+ <connection
+   kind="clock"
+   version="18.1"
+   start="pll_0.outclk0"
+   end="pio_encoder_cnt.clk" />
  <connection
    kind="clock"
    version="18.1"
@@ -1514,6 +1567,11 @@
    version="18.1"
    start="hps_0.h2f_reset"
    end="pio_lines_cnt_encoder.reset" />
+ <connection
+   kind="reset"
+   version="18.1"
+   start="hps_0.h2f_reset"
+   end="pio_encoder_cnt.reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />

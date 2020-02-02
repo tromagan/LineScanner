@@ -292,12 +292,13 @@ always @(posedge CLK_80)
 begin
     if( ((SDRAM0_WRITE & ~SDRAM0_WAITREQUEST) == 1'b1) && (SDRAM0_ADDRESS >= r_dma_start_address)                      && (SDRAM0_ADDRESS < (r_dma_start_address +   r_dma_buf_size)))
         check_cnt16_0(65535);
-    
+/*    
     if( ((SDRAM0_WRITE & ~SDRAM0_WAITREQUEST) == 1'b1) && (SDRAM0_ADDRESS >= (r_dma_start_address +   r_dma_buf_size)) && (SDRAM0_ADDRESS < (r_dma_start_address + 2*r_dma_buf_size)))
         check_cnt16_1(65535);
 
     if( ((SDRAM0_WRITE & ~SDRAM0_WAITREQUEST) == 1'b1) && (SDRAM0_ADDRESS >= (r_dma_start_address + 2*r_dma_buf_size)) && (SDRAM0_ADDRESS < (r_dma_start_address + 3*r_dma_buf_size)))
         check_cnt16_2(65535);
+*/        
 end
 
 
