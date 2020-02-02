@@ -54,6 +54,7 @@
 #define BA_LINES_DELAY  0x0230
 #define BA_LINES_EVENT  0x0240
 
+#define BA_ENCODER_CNT  0x0260
 
 //bits of control register
 #define CTRL_BIT_RST        0
@@ -75,6 +76,7 @@
 #define GET_STATUS_REG() GET_REG(BA_STATUS_REG)
 
 #define GET_TIMER_REG() GET_REG(BA_TIMER_REG)
+#define GET_ENCODER_CNT_REG() GET_REG(BA_ENCODER_CNT)
 
 #define SET_LED_CLK_R(val) SET_REG(BA_LED_CLK_R, val)
 #define SET_LED_CLK_G(val) SET_REG(BA_LED_CLK_G, val)
@@ -94,9 +96,9 @@
 #define CIS_MODE_BURST      1
 #define CIS_MODE_EVENT      2
 
-#define CIS_MODE CIS_MODE_CONTINUOUS
+#define CIS_MODE CIS_MODE_EVENT
 #define LINES_DELAY 4*2592          //delay in clock cycles
-#define LINES_EVENT 128               //lines per encoder pulse
+#define LINES_EVENT 1               //lines per encoder pulse
 
 #define NETWORK
 //host IP
@@ -449,6 +451,18 @@ void test_rgb()
 }
 
 
+void test_encoder()
+{
+  CLR_RST();
+
+  while(1)
+  {
+    printf("encoder cnt: %d \n\r", GET_ENCODER_CNT_REG());
+    usleep(500*1000);
+  }
+}
+
+
 #define BUF_SIZE 2592*6*1
 uint32_t buf[BUF_SIZE >> 2];
 
@@ -498,6 +512,8 @@ int main( int argc, char *argv[] )
   printf("timer: %d\n\r", GET_TIMER_REG());
 
   //test_rgb();
+
+  //test_encoder();
 
   //SET_RST();
   //SET_RST_CIS();
