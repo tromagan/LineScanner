@@ -34,7 +34,7 @@ reg                     r_lrgb_start = 1'b0, r_lrgb_end = 1'b0;
 
 reg                     r_ext_start = 1'b0, r_ext_start_rise = 1'b0;
 reg                     r_ext_start_in_progress = 1'b0;
-reg     [ 15 : 0 ]      r_external_start_lines_cnt = 16'd0, r_ext_start_lines_cnt = 16'd0;
+reg     [ 15 : 0 ]      r_external_start_lines_cnt = 16'd1, r_ext_start_lines_cnt = 16'd0;
 
 reg                     r_si = 1'b0;
 reg                     r_si_toggle_en = 1'b0,r_si_toggle = 1'b0;
@@ -52,10 +52,10 @@ begin
     else
         r_rgb_lines_delay_cnt <= RGB_LINES_DELAY;
 
-    if(EXTERNAL_START_LCNT == 0)
-        r_external_start_lines_cnt <= 16'd1;
-    else
-        r_external_start_lines_cnt <= EXTERNAL_START_LCNT;
+    // if(EXTERNAL_START_LCNT == 0)
+    //     r_external_start_lines_cnt <= 16'd1;
+    // else
+    //     r_external_start_lines_cnt <= EXTERNAL_START_LCNT;
 
     r_mode <= MODE;
 

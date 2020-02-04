@@ -94,7 +94,8 @@ wire    [ 11 : 0 ]      w_adc_data;
 
 wire    [  1 : 0 ]      w_cis_mode;
 wire    [ 23 : 0 ]      w_cis_lines_delay;
-wire    [ 15 : 0 ]      w_cis_lcnt_encoder;
+wire    [ 15 : 0 ]      w_pulses_cnt_div;
+
 
 wire    [  2 : 0 ]      w_lrgb;
 wire                    w_si;
@@ -193,6 +194,8 @@ encoder_controller encoder_controller
 (
     .CLK                    ( w_clk_0           ),
     .RST                    ( w_sensor_rst      ),
+
+    .PULSES_CNT_DIV         ( w_pulses_cnt_div  ),      //limit for pulses counter. It's decimation factor for pulses
             
     .SIG_A                  ( w_encoder[1]      ),
     .SIG_B                  ( w_encoder[0]      ),
@@ -211,7 +214,7 @@ cis_controller cis_controller
     .MODE                   ( w_cis_mode        ),
     .RGB_LINES_DELAY        ( w_cis_lines_delay ),
     .EXTERNAL_START         ( w_encoder_pulse   ),
-    .EXTERNAL_START_LCNT    ( w_cis_lcnt_encoder),
+    .EXTERNAL_START_LCNT    (                   ),
 
     .R_ON_CNT               ( w_r_clk_on_off    ),               
     .G_ON_CNT               ( w_g_clk_on_off    ),
@@ -400,7 +403,7 @@ hps_sim hps_sim
     .LED_CLK_ON_GREEN_EXPORT                    ( w_g_clk_on_off            ),     // out  , u[32],
     .LED_CLK_ON_BLUE_EXPORT                     ( w_b_clk_on_off            ),     // out  , u[32],
     .LINES_DELAY_EXPORT                         ( w_cis_lines_delay         ),     // out  , u[32],
-    .LINES_CNT_ENCODER_EXPORT                   ( w_cis_lcnt_encoder        ),     // out  , u[32],
+    .LINES_CNT_ENCODER_EXPORT                   ( w_pulses_cnt_div          ),     // out  , u[32],
                 
     .TIMER_CNT_EXPORT                           ( w_timer                   ),     // in   , u[32],
                     
@@ -515,7 +518,7 @@ soc u0
 	.led_clk_on_green_export                    ( w_g_clk_on_off            ),                     //                     g_led_on_off.readdata
 	.led_clk_on_blue_export                     ( w_b_clk_on_off            ),                     //                     b_led_on_off.readdata
     .lines_delay_export                         ( w_cis_lines_delay         ),
-    .lines_cnt_encoder_export                   ( w_cis_lcnt_encoder        ),
+    .lines_cnt_encoder_export                   ( w_pulses_cnt_div          ),
 	.timer_cnt_export                           ( w_timer                   ),                        //                        timer_reg.readdata
     .encoder_cnt_export                         ( w_pulses_cnt              ),
 
