@@ -52,7 +52,7 @@
 #define BA_LED_CLK_G    0x0210
 #define BA_LED_CLK_B    0x0220
 #define BA_LINES_DELAY  0x0230
-#define BA_LINES_EVENT  0x0240
+#define BA_PULSES_DECIM 0x0240
 
 #define BA_ENCODER_CNT  0x0260
 
@@ -83,7 +83,7 @@
 #define SET_LED_CLK_B(val) SET_REG(BA_LED_CLK_B, val)
 
 #define SET_LINES_DELAY(val) SET_REG(BA_LINES_DELAY, val)
-#define SET_LINES_EVENT(val) SET_REG(BA_LINES_EVENT, val)
+#define SET_PULSES_DECIM(val) SET_REG(BA_PULSES_DECIM, val)
 
 #define SET_RST() SET_CTRL_REG(GET_CTRL_REG() |  (1 << CTRL_BIT_RST))
 #define CLR_RST() SET_CTRL_REG(GET_CTRL_REG() & ~(1 << CTRL_BIT_RST))
@@ -98,7 +98,7 @@
 
 #define CIS_MODE CIS_MODE_EVENT
 #define LINES_DELAY 4*2592          //delay in clock cycles
-#define LINES_EVENT 1               //lines per encoder pulse
+#define PULSES_DECIMATION 1               //decimation for encoder pulses
 
 #define NETWORK
 //host IP
@@ -505,7 +505,7 @@ int main( int argc, char *argv[] )
 
 
   SET_LINES_DELAY(LINES_DELAY);
-  SET_LINES_EVENT(LINES_EVENT);
+  SET_PULSES_DECIM(PULSES_DECIMATION);
   SET_CTRL_REG(0x3 | (CIS_MODE << CTRL_BIT_CIS_MODE));
 
   
