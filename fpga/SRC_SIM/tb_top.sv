@@ -60,10 +60,25 @@ top top
 
 //integer pps = 750;
 //integer pps = 720;
-integer pps = 700;
+//integer pps = 700;
+integer pps = 10000;
 //integer pulse_period_ms = 2;
 real pulse_period_ms = 1000.0/pps;
 integer pulse_period = pulse_period_ms * 2000;
+
+initial
+begin
+    repeat(1000) @(posedge CLK);
+    pps = 100;
+
+    repeat(1000) @(posedge CLK);
+    pps = 500;
+
+    repeat(1000) @(posedge CLK);
+    pps = 700;
+    
+    $display("pps inc done!");
+end
 
 initial
 begin
