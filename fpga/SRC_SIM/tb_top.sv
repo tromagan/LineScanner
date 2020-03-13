@@ -58,15 +58,21 @@ top top
     .LED            (               )
 );
 
-
-integer pulse_period_ms = 2;
+//integer pps = 750;
+//integer pps = 720;
+integer pps = 700;
+//integer pulse_period_ms = 2;
+real pulse_period_ms = 1000.0/pps;
+integer pulse_period = pulse_period_ms * 2000;
 
 initial
 begin
+    $display("pulse_period_ms = %f",pulse_period_ms);
     forever
     begin
         //repeat(5000) @(posedge CLK);
-        repeat(pulse_period_ms * 1000 * 2) @(posedge CLK);
+        //repeat(pulse_period_ms * 1000 * 2) @(posedge CLK);
+        repeat(pulse_period) @(posedge CLK);
 
         if(enc_inv == 1'b1)
             r_encoder[1] = ~r_encoder[1];
