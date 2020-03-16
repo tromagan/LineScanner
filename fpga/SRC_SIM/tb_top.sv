@@ -68,14 +68,23 @@ integer pulse_period = pulse_period_ms * 2000;
 
 initial
 begin
-    repeat(1000) @(posedge CLK);
+    repeat(100000) @(posedge CLK);
     pps = 100;
+    pulse_period_ms = 1000.0/pps;
+    pulse_period = pulse_period_ms * 2000;
+    $display("****pps = %d at %t",pps,$time());
 
-    repeat(1000) @(posedge CLK);
+    repeat(100000) @(posedge CLK);
     pps = 500;
+    pulse_period_ms = 1000.0/pps;
+    pulse_period = pulse_period_ms * 2000;
+    $display("****pps = %d at %t",pps,$time());
 
-    repeat(1000) @(posedge CLK);
+    repeat(100000) @(posedge CLK);
     pps = 700;
+    pulse_period_ms = 1000.0/pps;
+    pulse_period = pulse_period_ms * 2000;
+    $display("****pps = %d at %t",pps,$time());
     
     $display("pps inc done!");
 end
