@@ -1,13 +1,15 @@
 1. Соединяем ноутбук и de0-nano сетевым кабелем. Если на ноутбуке Windows, то запускаем Tftpd32 (для Ububntu можно использовать dhcpd) для назначения IP адреса плате (либо назначаем через роутер).
-2. На ноутбуке запускаем tcp_linescanner_server.py (через D:\LineScanner\run.bat)
+2. На ноутбуке запускаем tcp_linescanner_server.py и parser_RGB_bin.py (через tcp.bat)
+    В скрипте tcp_linescanner_server.py:
     Переменная ip_host = '192.168.1.1' содержит IP ноутбука.
     Переменная fname = "testfile.pcm" указывает путь записи в файл.
 
     Скрипт будет ожидать подключения на порт 2592.
     После подключения будет приниматься (2592*6*1024) байт.
-    После записи в файл скрипт завершает работу.
+    После записи в файл скрипт tcp_linescanner_server.py завершает работу и начинёт работать parser_RGB_bin.py по записаному файлу (fname = "testfile.pcm").
 
 3. На DE0-Nano плате в папке /root/tmp/ запускаем line_scanner_app (не забыв выполнить команды insmod dma_alloc.ko, export LD_LIBRARY_PATH="/usr/arm-linux-gnueabihf/lib/").
     Будет подключение на адрес s_addr ( см. файл main.c) и отправка (2592*6*512*2) байт (см. в main.c функцию simple_dma_process()).
 
-4. Для сборки картинки в файл в качестве тестового примера выступает скрипт parser_RGB_bin.py. В коде переменной fname указываем путь к записанному ранее файлу.
+
+

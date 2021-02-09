@@ -1,5 +1,6 @@
 sw/hps/*.o
 sw/hps/line_scanner_app
+sw/hps/test_line_scanner_app_contin
 sw/host/*.pcm
 sw/host/*.pk
 sw/host/*.png

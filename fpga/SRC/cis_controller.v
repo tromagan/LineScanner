@@ -95,12 +95,14 @@ begin
                 begin
                     r_ext_start_in_progress <= 1'b1;
                 end
-                    if( ((r_rgb_line_done == 1'b1) && (r_clk_cnt == (LINE_TIME_MIN-1 + LINE_TIME_MIN-1))) && (r_ext_start_lines_cnt == r_external_start_lines_cnt) )
+                    //if( ((r_rgb_line_done == 1'b1) && (r_clk_cnt == (LINE_TIME_MIN-1 + LINE_TIME_MIN-1))) && (r_ext_start_lines_cnt == r_external_start_lines_cnt) )
+                    if( ((r_rgb_line_done == 1'b1) && (r_clk_cnt == LINE_TIME_MIN-2)) && (r_ext_start_lines_cnt == r_external_start_lines_cnt) )
                         r_ext_start_in_progress <= 1'b0;
 
                 if(r_ext_start_in_progress == 1'b1)
                 begin
-                    if( ((r_rgb_line_done == 1'b1) && (r_clk_cnt == (LINE_TIME_MIN-1 + LINE_TIME_MIN))) || ((r_rgb_line_done == 1'b0) && (r_clk_cnt == LINE_TIME_MIN-1)) )
+                    //if( ((r_rgb_line_done == 1'b1) && (r_clk_cnt == (LINE_TIME_MIN-1 + LINE_TIME_MIN))) || ((r_rgb_line_done == 1'b0) && (r_clk_cnt == LINE_TIME_MIN-1)) )
+                    if(r_clk_cnt == LINE_TIME_MIN-1)
                         r_clk_cnt <= {CNT_WIDTH{1'b0}};
                     else
                         r_clk_cnt <= r_clk_cnt + 1'b1;

@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 //`default_nettype none
 
-//`define SIM
+`define SIM
 
 
 module top
@@ -9,17 +9,37 @@ module top
     input   wire                    FPGA_CLK1_50,
 
     //ADC CLK   AF7
-    output  wire                    CLKC,
+    output  wire                    CLKC_0,
+    //PIN_AG6
+    output  wire                    CLKC_1,
+    //PIN_AG28
+    output  wire                    CLKC_2,
     // AH2 AH3 AG5 AH4 AH6 AH5 T12 T8 U11 Y5 Y4 W8
-    input   wire    [ 11 : 0 ]      DC,
+    input   wire    [ 11 : 0 ]      DC_0,
+    // AE12 AF11 AE11 AD12 AF10 AD11 AE9 AD10 AE8 AF9 AF6 AE7
+    input   wire    [ 11 : 0 ]      DC_1,
+    // AF25 AG24 AA19 AH26 AG18 AC23 AF20 AG19 AG20 AF21 AE22 AF23
+    input   wire    [ 11 : 0 ]      DC_2,
 
     // [2:0] - RGB - AF8 Y8 AB4, active '0'
-    output  wire    [  2 : 0 ]      LRGB,
+    output  wire    [  2 : 0 ]      LRGB_0,
+    // [2:0] - RGB - AE4 T13 T11, active '0'
+    output  wire    [  2 : 0 ]      LRGB_1,
+    // [2:0] - RGB - AH27 AG26 AH24, active '0'
+    output  wire    [  2 : 0 ]      LRGB_2,
 
     // W12
-    output  wire                    SIC,
+    output  wire                    SIC_0,
+    // AF5
+    output  wire                    SIC_1,
+    // AA15
+    output  wire                    SIC_2,
     // V12
-    output  wire                    SCLKC,
+    output  wire                    SCLKC_0,
+    // AF4
+    output  wire                    SCLKC_1,
+    // Y15
+    output  wire                    SCLKC_2,
 
     output  wire    [  7 : 0 ]      LED,
 
@@ -90,7 +110,9 @@ wire                    w_clk_0,w_clk_1;
 reg     [  3 : 0 ]      r_sw = 4'd0;
 reg     [  1 : 0 ]      r_test_mode [ 2 : 0 ];
 
-wire    [ 11 : 0 ]      w_adc_data;
+wire    [ 11 : 0 ]      w_adc_din  [ 2 : 0 ];
+
+wire    [ 11 : 0 ]      w_adc_data [ 2 : 0 ];
 
 wire    [  1 : 0 ]      w_cis_mode;
 wire    [ 23 : 0 ]      w_cis_lines_delay;
@@ -237,13 +259,7 @@ reg_sync_adc_rst
     .DOUT                   ( w_adc_rst         )       //out
 );
 
-adc12010 adc12010
-(
-    .ADC_CLK                ( w_clk_1           ),
-    .ADC_DATA               ( DC                ),
-            
-    .DOUT                   ( w_adc_data        )
-); 
+ 
 
 
 always @(posedge w_clk_1)
@@ -252,6 +268,7 @@ if(w_adc_rst == 1'b1)
 else
 begin
     if( |w_pixels_fifo_ovr == 1'b1)
+    //if( w_pixels_fifo_ovr[0] == 1'b1)
         r_fifo_ovr <= 1'b1;
 end
 
@@ -294,15 +311,26 @@ begin
     r_dma_on            <= w_dma_on;
 end
 
+assign w_adc_din[0] = DC_0;
+assign w_adc_din[1] = DC_1;
+assign w_adc_din[2] = DC_2;
+
 generate 
 for (g = 0; g < 3; g = g + 1)
 begin: gloop_datapath
+
+    adc12010 adc12010
+    (
+        .ADC_CLK                        ( w_clk_1                   ),
+        .ADC_DATA                       ( w_adc_din         [g]     ),
+        .DOUT                           ( w_adc_data        [g]     )
+    );
 
     adc_data_wrapper adc_data_wrapper
     (
         .ADC_CLK                        ( w_clk_1                   ),
         .ARST                           ( w_adc_rst                 ),
-        .ADC_DIN                        ( w_adc_data                ),
+        .ADC_DIN                        ( w_adc_data        [g]     ),
                     
         //.MUX_TEST_CNT                   ( SW[1:0]                   ),
         .MUX_TEST_CNT                   ( r_test_mode       [g]     ),
@@ -556,7 +584,7 @@ altddio_out
     .width                  (1),
     .intended_device_family ("Cyclone V")
 ) 
-ddio_out_clkc 
+ddio_out_clkc_0 
 (
     .datain_h   ( 1'b1      ),
     .datain_l   ( 1'b0      ),
@@ -571,7 +599,53 @@ ddio_out_clkc
     .sclr       ( 1'b0      ),
     
     .oe_out     (           ),
-    .dataout    ( CLKC      )
+    .dataout    ( CLKC_0    )
+);
+
+altddio_out 
+#(
+    .width                  (1),
+    .intended_device_family ("Cyclone V")
+) 
+ddio_out_clkc_1 
+(
+    .datain_h   ( 1'b1      ),
+    .datain_l   ( 1'b0      ),
+    .outclock   ( w_clk_0   ),
+    .oe         ( 1'b1      ),
+    .outclocken ( 1'b1      ),
+    
+    .aset       ( 1'b0      ),
+    .aclr       ( 1'b0      ),
+    
+    .sset       ( 1'b0      ),
+    .sclr       ( 1'b0      ),
+    
+    .oe_out     (           ),
+    .dataout    ( CLKC_1    )
+);
+
+altddio_out 
+#(
+    .width                  (1),
+    .intended_device_family ("Cyclone V")
+) 
+ddio_out_clkc_2 
+(
+    .datain_h   ( 1'b1      ),
+    .datain_l   ( 1'b0      ),
+    .outclock   ( w_clk_0   ),
+    .oe         ( 1'b1      ),
+    .outclocken ( 1'b1      ),
+    
+    .aset       ( 1'b0      ),
+    .aclr       ( 1'b0      ),
+    
+    .sset       ( 1'b0      ),
+    .sclr       ( 1'b0      ),
+    
+    .oe_out     (           ),
+    .dataout    ( CLKC_2    )
 );
 
 
@@ -580,7 +654,7 @@ altddio_out
     .width                  (1),
     .intended_device_family ("Cyclone V")
 ) 
-ddio_out_sclkc 
+ddio_out_sclkc_0 
 (
     .datain_h   ( 1'b1      ),
     .datain_l   ( 1'b0      ),
@@ -595,7 +669,53 @@ ddio_out_sclkc
     .sclr       ( 1'b0      ),
     
     .oe_out     (           ),
-    .dataout    ( SCLKC     )
+    .dataout    ( SCLKC_0   )
+);
+
+altddio_out 
+#(
+    .width                  (1),
+    .intended_device_family ("Cyclone V")
+) 
+ddio_out_sclkc_1 
+(
+    .datain_h   ( 1'b1      ),
+    .datain_l   ( 1'b0      ),
+    .outclock   ( w_clk_0   ),
+    .oe         ( 1'b1      ),
+    .outclocken ( 1'b1      ),
+    
+    .aset       ( 1'b0      ),
+    .aclr       ( 1'b0      ),
+    
+    .sset       ( 1'b0      ),
+    .sclr       ( 1'b0      ),
+    
+    .oe_out     (           ),
+    .dataout    ( SCLKC_1   )
+);
+
+altddio_out 
+#(
+    .width                  (1),
+    .intended_device_family ("Cyclone V")
+) 
+ddio_out_sclkc_2 
+(
+    .datain_h   ( 1'b1      ),
+    .datain_l   ( 1'b0      ),
+    .outclock   ( w_clk_0   ),
+    .oe         ( 1'b1      ),
+    .outclocken ( 1'b1      ),
+    
+    .aset       ( 1'b0      ),
+    .aclr       ( 1'b0      ),
+    
+    .sset       ( 1'b0      ),
+    .sclr       ( 1'b0      ),
+    
+    .oe_out     (           ),
+    .dataout    ( SCLKC_2   )
 );
 
 `endif
@@ -625,12 +745,20 @@ encoder_cnt_debug encoder_cnt_debug
 
 
 `ifdef SIM
-assign CLKC  = w_clk_0;
-assign SCLKC = w_clk_0;
+assign CLKC_0  = w_clk_0;
+assign CLKC_1  = w_clk_0;
+assign CLKC_2  = w_clk_0;
+assign SCLKC_0 = w_clk_0;
+assign SCLKC_1 = w_clk_0;
+assign SCLKC_2 = w_clk_0;
 `endif
 
-assign LRGB = w_lrgb;
-assign SIC  = w_si;
+assign LRGB_0 = w_lrgb;
+assign LRGB_1 = w_lrgb;
+assign LRGB_2 = w_lrgb;
+assign SIC_0  = w_si;
+assign SIC_1  = w_si;
+assign SIC_2  = w_si;
 
 assign LED[6] = r_fifo_ovr;
 assign LED[5] = 1'b0;
@@ -639,6 +767,6 @@ assign LED[3] = 1'b0;
 assign LED[2] = 1'b0;
 assign LED[1] = 1'b0;
 
-assign LED[0] = {7'd0, w_si_toggle | ^w_lrgb | ^w_si_cnt | ^w_adc_data} | {7'd0,w_global_dbg};
+assign LED[0] = w_global_dbg;
 
 endmodule

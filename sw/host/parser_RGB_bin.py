@@ -5,7 +5,9 @@ from PIL import Image, ImageDraw
 import numpy as np
 
 line_scan_bytes_size = 2592 * 6
-fname = "f:/testfile.pcm"
+fname = "f:/testfile_encoder.pcm"
+#fname = "f:/testfile_contin.pcm"
+#fname = "f:/testfile.pcm"
 #fname  = "f:/testfile_dark.pcm"
 #fname  = "f:/testfile_white_1.pcm"
 #fname = "/home/denc/Dropbox/Upload/adjust/testfile_white_0.pcm"
@@ -114,6 +116,22 @@ def load_pcm(fname):
 
 
 rgb = load_pcm(fname)
+'''
+rgb[:,:,0] = rgb[:,:,2]
+rgb[:,:,1] = rgb[:,:,0]
+rgb[:,:,2] = rgb[:,:,1]
+
+print(rgb[:,:,0])
+'''
+'''
+new_rgb = rgb
+new_rgb[:,:,0] = rgb[:,:,2]
+new_rgb[:,:,1] = rgb[:,:,0]
+new_rgb[:,:,2] = rgb[:,:,1]
+rgb = new_rgb
+print(rgb.shape)
+#sys.exit()
+'''
 lines_cnt = rgb.shape[0]
 save_colors_file(rgb, 1)
 

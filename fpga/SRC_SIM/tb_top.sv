@@ -42,12 +42,12 @@ end
 top top
 (
     .FPGA_CLK1_50   ( CLK_50        ),
-    .CLKC           ( CLK           ),
-    .DC             ( w_adc_data    ),
+    .CLKC_0         ( CLK           ),
+    .DC_0           ( w_adc_data    ),
 
-    .LRGB           (               ),
-    .SIC            ( w_si          ),
-    .SCLKC          (               ),
+    .LRGB_0         (               ),
+    .SIC_0          ( w_si          ),
+    .SCLKC_0        (               ),
 
     .ENC_P          ( r_encoder     ),
     .ENC_N          ( ~r_encoder    ),
@@ -58,10 +58,11 @@ top top
     .LED            (               )
 );
 
+//integer pps = 100;
+integer pps = 820;
+//integer pps = 2000;
 //integer pps = 750;
-//integer pps = 720;
-//integer pps = 700;
-integer pps = 10000;
+//integer pps = 10000;
 //integer pulse_period_ms = 2;
 real pulse_period_ms = 1000.0/pps;
 integer pulse_period = pulse_period_ms * 2000;

@@ -1,5 +1,5 @@
 #
-TARGET = line_scanner_app
+TARGET = test_line_scanner_app
 
 #
 ALT_DEVICE_FAMILY ?= soc_cv_av

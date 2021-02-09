@@ -96,13 +96,13 @@
 #define CIS_MODE_BURST      1
 #define CIS_MODE_EVENT      2
 
-#define CIS_MODE CIS_MODE_EVENT
+#define CIS_MODE CIS_MODE_CONTINUOUS
 #define LINES_DELAY 4*2592          //delay in clock cycles
 #define PULSES_DECIMATION 1               //decimation for encoder pulses
 
 #define NETWORK
 //host IP
-char *s_addr = "192.168.1.1";
+char *s_addr = "192.168.200.3";
 
 
 
@@ -453,12 +453,14 @@ void test_rgb()
 
 void test_encoder()
 {
+  int i;
   CLR_RST();
 
-  while(1)
+  //while(1)
+  for(i = 0; i < 10; i++)
   {
     printf("encoder cnt: %d \n\r", GET_ENCODER_CNT_REG());
-    usleep(500*1000);
+    usleep(1000*1000);
   }
 }
 

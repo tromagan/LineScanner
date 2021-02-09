@@ -127,7 +127,7 @@ initial
 begin
     force LED_CLK_ON_RED_EXPORT     = ((200 << 16) | 10);
     force LED_CLK_ON_GREEN_EXPORT   = ((0 << 16) | 0);
-    force LED_CLK_ON_BLUE_EXPORT    = ((1 << 16) | 0);
+    force LED_CLK_ON_BLUE_EXPORT    = ((0 << 16) | 1);
 
     r_cis_mode = 2'd2;
     force LINES_DELAY_EXPORT = 24'd10000;
