@@ -96,7 +96,7 @@
 #define CIS_MODE_BURST      1
 #define CIS_MODE_EVENT      2
 
-#define CIS_MODE CIS_MODE_CONTINUOUS
+#define CIS_MODE CIS_MODE_EVENT
 #define LINES_DELAY 4*2592          //delay in clock cycles
 #define PULSES_DECIMATION 1               //decimation for encoder pulses
 
